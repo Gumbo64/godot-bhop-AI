@@ -1,17 +1,17 @@
 extends KinematicBody
 
 var damage = 10
-const MAX_CAM_SHAKE = 0.3
+const MAX_CAM_SHAKE = 0.001
 
-
+onready var b_decal = preload("res://BulletDecal.tscn")
 
 var speed = 40
-var accel_type = {"default": 10, "air": 1}
+var accel_type = {"default": 10, "air": 10}
 onready var accel = accel_type["default"]
 var gravity = 40
 var jump = 20
 
-var cam_accel = 40
+var cam_accel = accel_type['default'] * 10
 var mouse_sense = 0.1
 var snap
 
@@ -37,28 +37,34 @@ func _ready():
 
 func _input(event):
 	if event is InputEventMouseMotion:
-		rotate_y(deg2rad(-event.relative.x * mouse_sensimoustivity))
-		head.rotate_x(deg2rad(-event.relative.y * mouse_sensitivity))
+		rotate_y(deg2rad(-event.relative.x * mouse_sense))
+		head.rotate_x(deg2rad(-event.relative.y * mouse_sense))
 		head.rotation.x = clamp(head.rotation.x, deg2rad(-89), deg2rad(89))
 		
 func fire():
 	if Input.is_action_pressed("fire"):
 		if not anim_player.is_playing():
-			camera.translation = lerp(camera.translation, 
-					Vector3(rand_range(MAX_CAM_SHAKE, -MAX_CAM_SHAKE), 
-					rand_range(MAX_CAM_SHAKE, -MAX_CAM_SHAKE), 0), 0.5)
+#			camera.translation = lerp(camera.translation, 
+#					Vector3(rand_range(MAX_CAM_SHAKE, -MAX_CAM_SHAKE), 
+#					rand_range(MAX_CAM_SHAKE, -MAX_CAM_SHAKE), 0), 0.5)
 			if raycast.is_colliding():
 				var target = raycast.get_collider()
 				if target.is_in_group("Enemy"):
 					target.health -= damage
-		anim_player.play("AssaultFire")
+				var b = b_decal.instance()
+				raycast.get_collider().add_child(b)
+				b.global_transform.origin = raycast.get_collision_point()
+				b.look_at(raycast.get_collision_point() + raycast.get_collision_normal(), Vector3.UP)
+#		anim_player.play("AssaultFire")
 	else:
-		camera.translation = Vector3()
-		anim_player.stop()
+		pass
+#		camera.translation = Vector3.ZERO
+#		anim_player.stop()
 		
 		
 func _process(delta):
-	#camera physics interpolation to reduce physics jitter on high refresh-rate monitors
+	
+		#camera physics interpolation to reduce physics jitter on high refresh-rate monitors
 	if Engine.get_frames_per_second() > Engine.iterations_per_second:
 		camera.set_as_toplevel(true)
 		camera.global_transform.origin = camera.global_transform.origin.linear_interpolate(head.global_transform.origin, cam_accel * delta)
@@ -69,8 +75,9 @@ func _process(delta):
 		camera.global_transform = head.global_transform		
 
 func _physics_process(delta):
-	
 	fire()
+
+	#get keyboard input
 	direction = Vector3.ZERO
 	var h_rot = global_transform.basis.get_euler().y
 	var f_input = Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
@@ -97,7 +104,7 @@ func _physics_process(delta):
 	movement = velocity + gravity_vec
 	
 	move_and_slide_with_snap(movement, snap, Vector3.UP)
-	
+
 	
 	
 	

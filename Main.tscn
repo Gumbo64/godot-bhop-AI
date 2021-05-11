@@ -10,4 +10,4 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5582, 0.443707, 1.5763 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4.43125, 0.747546, -4.74547 )
 
 [node name="NewFPSARTut" parent="." instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.31024, 7.22345, 7.14024 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -7.87589, 9.67962, -2.56199 )

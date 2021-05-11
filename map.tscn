@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://gridmaterial.tres" type="Material" id=1]
+[ext_resource path="res://gunmaterial.tres" type="Material" id=2]
 
 [node name="map" type="Spatial"]
 
@@ -31,7 +32,9 @@ use_collision = true
 
 [node name="CSGBox2" type="CSGBox" parent="CSGCombiner2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5741, 5.64182 )
+material = ExtResource( 2 )
 
 [node name="CSGPolygon" type="CSGPolygon" parent="CSGCombiner2"]
 transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 2, 5.38722, 0.866317, 0 )
 polygon = PoolVector2Array( -3.79195, -0.2445, 0, 1, 1, 1, 1, 0 )
+material = ExtResource( 2 )
