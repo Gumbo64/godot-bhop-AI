@@ -31,6 +31,8 @@ onready var ground_check = $GroundCheck
 onready var anim_player = $AnimationPlayer
 onready var raycast = $Head/Camera/RayCast
 
+
+
 func _ready():
 	#hides the cursor
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -72,7 +74,7 @@ func _process(delta):
 		camera.rotation.x = head.rotation.x
 	else:
 		camera.set_as_toplevel(false)
-		camera.global_transform = head.global_transform		
+		camera.global_transform = head.global_transform
 
 func _physics_process(delta):
 	fire()
@@ -85,6 +87,7 @@ func _physics_process(delta):
 	direction = Vector3(h_input, 0, f_input).rotated(Vector3.UP, h_rot).normalized()
 	
 	#jumping and gravity
+
 	if is_on_floor():
 		snap = -get_floor_normal()
 		accel = accel_type["default"]
@@ -94,25 +97,21 @@ func _physics_process(delta):
 		snap = Vector3.DOWN
 		accel = accel_type["air"]
 		gravity_vec += Vector3.DOWN * gravity * delta
-		
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if Input.is_action_pressed("jump") and is_on_floor():
 		snap = Vector3.ZERO
 		gravity_vec = Vector3.UP * jump
+		
 	
+
 	#make it move
 	velocity = velocity.linear_interpolate(direction * speed, accel * delta)
 	movement = velocity + gravity_vec
 	
 	move_and_slide_with_snap(movement, snap, Vector3.UP)
+	if(global_transform.origin[1]<0):
+		global_transform.origin[1] = 50
+	
 
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+

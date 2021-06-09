@@ -23,38 +23,6 @@ albedo_color = Color( 1, 0.0470588, 0.0470588, 1 )
 resource_name = "AssaultFire"
 length = 0.08
 step = 0.01
-tracks/0/type = "value"
-tracks/0/path = NodePath("Head/Camera/Hand/MeshInstance:translation")
-tracks/0/interp = 2
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.02, 0.08 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
-"update": 0,
-"values": [ Vector3( 0, 0, 0 ), Vector3( 0, 0, 0.143 ), Vector3( 0, 0, 0 ) ]
-}
-tracks/1/type = "bezier"
-tracks/1/path = NodePath("Head/Camera/CenterContainer/TextureRect:rect_scale:x")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"points": PoolRealArray( 1, -0.25, 0, 0.25, 0 ),
-"times": PoolRealArray( 0 )
-}
-tracks/2/type = "bezier"
-tracks/2/path = NodePath("Head/Camera/CenterContainer/TextureRect:rect_scale:y")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/keys = {
-"points": PoolRealArray( 0.2, -0.25, 0, 0.25, 0 ),
-"times": PoolRealArray( 0 )
-}
 
 [node name="NewFPSARTut" type="KinematicBody"]
 script = ExtResource( 1 )
@@ -79,6 +47,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0 )
 
 [node name="Camera" type="Camera" parent="Head"]
 fov = 90.0
+far = 10000.0
 
 [node name="RayCast" type="RayCast" parent="Head/Camera"]
 enabled = true
