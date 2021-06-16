@@ -103,5 +103,5 @@ shape = SubResource( 9 )
 [node name="entity_0_brush_7_collision_shape" type="CollisionShape" parent="QodotMap/entity_0_worldspawn"]
 shape = SubResource( 10 )
 
-[node name="NewFPSARTut" parent="." instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -44.0888, 69.243, 51.5729 )
+[node name="Player" parent="." instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -12.8206, 35.7106, 17.366 )

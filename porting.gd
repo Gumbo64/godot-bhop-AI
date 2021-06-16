@@ -14,7 +14,7 @@ var friction  = 6
 #        # Ground friction
 
 ## Movement stuff */
-var moveSpeed               = 10
+var moveSpeed               = 1000
 ## Ground move speed
 var runAcceleration         = 14   
 ## Ground accel
@@ -55,10 +55,7 @@ var wishJump = true
 var playerFriction = 0.0
 
 ## Contains the command the user wishes upon the character
-var cmd =  {
-	"rightMove": 0,
-	"forwardMove":0
-}
+var cmd =  {}
 
 func _ready():
 	#hides the cursor
@@ -124,27 +121,25 @@ func _physics_process(delta):
 	
 	QueueJump()
 	if(is_on_floor()):
-		snap = -get_floor_normal()
-#		print('ground')
+#		snap = -get_floor_normal()
 		GroundMove(delta)
 #		playerVelocity.y=0
 
 	else:
-#		print('air')
-		snap = Vector3.DOWN
+		# snap = Vector3.DOWN
 		AirMove(delta)
 #		playerVelocity.y -=gravity
 		# gravity_vec += Vector3.DOWN * gravity 
-	if wishJump and is_on_floor():
-		snap = Vector3.ZERO
-#		gravity_vec = Vector3.UP * jumpSpeed
-	print(wishJump)
+	# if wishJump and is_on_floor():
+	# 	snap = Vector3.ZERO
+	# 	gravity_vec = Vector3.UP * jumpSpeed
+	
 	# Move the controller
 #	global_transform.origin += playerVelocity * delta
 
 #	print(playerVelocity.y)
 	
-	move_and_slide_with_snap(playerVelocity,snap,Vector3.UP)
+	move_and_slide(playerVelocity)
 	
 	if(global_transform.origin[1]<0):
 		global_transform.origin[1] = 50
@@ -162,8 +157,8 @@ func _physics_process(delta):
 # */
 func SetMovementDir():
 
-	cmd.forwardMove = Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
-	cmd.rightMove   = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+	cmd.forwardmove = Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
+	cmd.rightmove   = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
 
 
 ##*
@@ -173,6 +168,8 @@ func QueueJump():
 	if(holdJumpToBhop):
 		wishJump = Input.is_action_pressed("jump")
 		return
+	
+
 	if(Input.is_action_pressed("jump") and !wishJump):
 		wishJump = true
 	if(Input.is_action_pressed("jump")):
@@ -196,7 +193,7 @@ func AirMove(delta):
 
 	
 #	print(get_global_transform().basis)
-	wishdir = Vector3(cmd.rightMove, 0, cmd.forwardMove)
+	wishdir = Vector3(cmd.rightmove, 0, cmd.forwardmove).
 	wishdir = wishdir.rotated(Vector3.UP, global_transform.basis.get_euler().y)
 #	wishdir = to_global(wishdir)
 
@@ -214,7 +211,7 @@ func AirMove(delta):
 	else:
 		accel = airAcceleration
 	# If the player is ONLY strafing left or right
-	if(cmd.forwardMove == 0 and cmd.rightMove != 0):
+	if(cmd.forwardmove == 0 and cmd.rightmove != 0):
 	
 		if(wishspeed > sideStrafeSpeed):
 			wishspeed = sideStrafeSpeed
@@ -247,7 +244,7 @@ func AirControl(wishdir, wishspeed,delta ):
 	var i  
 
 	# Can't control movement if not moving forward or backward
-	if(abs(cmd.forwardMove) < 0.001 or abs(wishspeed) < 0.001):
+	if(abs(_cmd.forwardMove) < 0.001 or abs(wishspeed) < 0.001)
 		return;
 
 	zspeed = playerVelocity.y
@@ -291,7 +288,7 @@ func GroundMove(delta):
 
 	SetMovementDir()
 
-	wishdir = Vector3(cmd.rightMove, 0, cmd.forwardMove)
+	wishdir = Vector3(cmd.rightmove, 0, cmd.forwardmove)
 	wishdir = wishdir.rotated(Vector3.UP, global_transform.basis.get_euler().y)
 	wishdir = wishdir.normalized()
 	moveDirectionNorm = wishdir
@@ -302,11 +299,11 @@ func GroundMove(delta):
 	Accelerate(wishdir, wishspeed, runAcceleration,delta)
 
 	# Reset the gravity velocity
-	playerVelocity.y = 0
+	playerVelocity.y = -gravity * delta
 	
 	if(wishJump):
 		playerVelocity.y = jumpSpeed
-#		wishJump = false
+		wishJump = false
 	
 
 #*

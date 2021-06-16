@@ -83,9 +83,8 @@ func _process_input(delta):
 		inbetween = true
 	
 	# WASD
-	input_dir = Vector3(Input.get_action_strength("right") - Input.get_action_strength("left"), 
-			0,
-			Input.get_action_strength("back") - Input.get_action_strength("forward")).normalized()
+	input_dir = Vector3(Input.get_action_strength("move_right") - Input.get_action_strength("move_left"), 0
+				,Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")).normalized()
 
 
 var collision : KinematicCollision  # Stores the collision from move_and_collide

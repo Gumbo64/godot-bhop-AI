@@ -6,11 +6,9 @@ const MAX_CAM_SHAKE = 0.001
 onready var b_decal = preload("res://BulletDecal.tscn")
 
 var speed = 40
-var accel_type = {"default": 5, "air": 3}
-var max_velocity = 10
-var frictiono = 60
+var accel_type = {"default": 10, "air": 10}
 onready var accel = accel_type["default"]
-var gravity =60
+var gravity = 40
 var jump = 20
 
 var cam_accel = accel_type['default'] * 10
@@ -78,33 +76,19 @@ func _process(delta):
 		camera.set_as_toplevel(false)
 		camera.global_transform = head.global_transform
 
-
-
-func friction(invelocity):
-
-	var sped = invelocity.length()
-	if (sped != 0):
-		var drop = sped * frictiono / 1000 ;
-		invelocity *= max(sped - drop, 0) / sped; 
-#		// Scale the velocity based on friction.
-	return invelocity
-var highspeed = 0
-func _physics_process(_delta):
+func _physics_process(delta):
 	fire()
-	var fakedelta = 0.01
+
 	#get keyboard input
 	direction = Vector3.ZERO
 	var h_rot = global_transform.basis.get_euler().y
 	var f_input = Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
 	var h_input = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
-#	var jumping = true
-	var jumping = Input.is_action_pressed("jump")
 	direction = Vector3(h_input, 0, f_input).rotated(Vector3.UP, h_rot).normalized()
 	
 	#jumping and gravity
 
 	if is_on_floor():
-		
 		snap = -get_floor_normal()
 		accel = accel_type["default"]
 		gravity_vec = Vector3.ZERO
@@ -112,39 +96,15 @@ func _physics_process(_delta):
 	else:
 		snap = Vector3.DOWN
 		accel = accel_type["air"]
-		gravity_vec += Vector3.DOWN * gravity/100
-	if jumping and is_on_floor():
+		gravity_vec += Vector3.DOWN * gravity * delta
+	if Input.is_action_pressed("jump") and is_on_floor():
 		snap = Vector3.ZERO
-#		gravity_vec = Vector3.UP * jump
-		gravity_vec = Vector3.UP * get_floor_normal().y * jump
-		velocity += Vector3(get_floor_normal().x,0,get_floor_normal().z) * jump
+		gravity_vec = Vector3.UP * jump
+		
 	
-	
-	if jumping or not is_on_floor():
-		pass
-	else:
-		velocity = friction(velocity)
-	
-	if velocity.length() > highspeed:
-		print( highspeed)
-		highspeed = velocity.length()
-#	velocity += direction * speed * fakedelta
-	
+
 	#make it move
-#	velocity = velocity.linear_interpolate(direction * speed, accel * delta)
-	var projVel =velocity.dot( direction)
-#	// Vector projection of Current velocity onto direction.
-	var accelVel = accel * fakedelta
-#	// Accelerated velocity in direction of movment
-
-#	// If necessary, truncate the accelerated velocity so the vector projection does not exceed max_velocity
-
-	if(projVel + accelVel > max_velocity):
-		accelVel = max_velocity - projVel
-
-	velocity += direction * accelVel *fakedelta * 1000;
-
-	
+	velocity = velocity.linear_interpolate(direction * speed, accel * delta)
 	movement = velocity + gravity_vec
 	
 	move_and_slide_with_snap(movement, snap, Vector3.UP)
