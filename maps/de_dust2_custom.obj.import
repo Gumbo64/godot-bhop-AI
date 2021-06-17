@@ -1,0 +1,19 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/de_dust2_custom.obj-c9c457a0f93a1992971558aeaa7b9e78.mesh"
+
+[deps]
+
+files=[ "res://.import/de_dust2_custom.obj-c9c457a0f93a1992971558aeaa7b9e78.mesh" ]
+
+source_file="res://maps/de_dust2_custom.obj"
+dest_files=[ "res://.import/de_dust2_custom.obj-c9c457a0f93a1992971558aeaa7b9e78.mesh", "res://.import/de_dust2_custom.obj-c9c457a0f93a1992971558aeaa7b9e78.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+optimize_mesh=true

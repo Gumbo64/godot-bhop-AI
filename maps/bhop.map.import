@@ -1,0 +1,13 @@
+[remap]
+
+importer="qodot.map"
+type="Resource"
+path="res://.import/bhop.map-4b00b2ff8cbd73ae749502279d864b54.tres"
+
+[deps]
+
+source_file="res://maps/bhop.map"
+dest_files=[ "res://.import/bhop.map-4b00b2ff8cbd73ae749502279d864b54.tres" ]
+
+[params]
+

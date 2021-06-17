@@ -193,13 +193,13 @@ func AirMove(delta):
 
 	
 #	print(get_global_transform().basis)
-	wishdir = Vector3(cmd.rightmove, 0, cmd.forwardmove).
+	wishdir = Vector3(cmd.rightmove, 0, cmd.forwardmove)
 	wishdir = wishdir.rotated(Vector3.UP, global_transform.basis.get_euler().y)
 #	wishdir = to_global(wishdir)
 
 	var wishspeed = wishdir.length()
 	
-	wishspeed *= moveSpeed
+	wishspeed *= moveSpeed * delta
 
 	wishdir=wishdir.normalized()
 	moveDirectionNorm = wishdir

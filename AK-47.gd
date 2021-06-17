@@ -5,16 +5,16 @@ extends KinematicBody
 ## Must be a camera
 var playerViewYOffset = 0.6 
 ## The height at which the camera is bound to
-var xMouseSensitivity = 1
-var yMouseSensitivity = 1
+var xMouseSensitivity = 0.4
+var yMouseSensitivity = 0.4
 
 ## Frame occuring factors */
-var gravity   = 10
+var gravity   = 20
 var friction  = 6        
 #        # Ground friction
 
 ## Movement stuff */
-var moveSpeed               = 10
+var moveSpeed               = 7
 ## Ground move speed
 var runAcceleration         = 14   
 ## Ground accel
@@ -26,11 +26,11 @@ var airDeacceleration       = 2.0
 ## Deacceleration experienced when opposite strafing
 var airControl              = 0.3  
 ## How precise air control is
-var sideStrafeAcceleration  = 50   
+var sideStrafeAcceleration  = 100
 ## How fast acceleration occurs to get up to sideStrafeSpeed when side strafing
-var sideStrafeSpeed         = 1    
+var sideStrafeSpeed         = 2
 ## What the max speed to generate when side strafing
-var jumpSpeed               = 8
+var jumpSpeed               = 12
 ## The speed at which the character's up axis gains when hitting jump
 var holdJumpToBhop         = true
 ## When enabled allows player to just hold jump button to keep on bhopping perfectly. Beware: smells like casual.
@@ -138,7 +138,7 @@ func _physics_process(delta):
 	if wishJump and is_on_floor():
 		snap = Vector3.ZERO
 #		gravity_vec = Vector3.UP * jumpSpeed
-	print(wishJump)
+#	print(wishJump)
 	# Move the controller
 #	global_transform.origin += playerVelocity * delta
 
@@ -305,7 +305,8 @@ func GroundMove(delta):
 	playerVelocity.y = 0
 	
 	if(wishJump):
-		playerVelocity.y = jumpSpeed
+		playerVelocity.y =  jumpSpeed
+		playerVelocity += Vector3(get_floor_normal().x,0,get_floor_normal().z) * jumpSpeed
 #		wishJump = false
 	
 
