@@ -63,6 +63,7 @@ var cmd =  {
 func _ready():
 	#hides the cursor
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	raycast.add_exception(get_node("/root/Spatial/Player"))
 	
 onready var head = $Head
 onready var camera = $Head/Camera
@@ -306,7 +307,9 @@ func GroundMove(delta):
 	
 	if(wishJump):
 		playerVelocity.y =  jumpSpeed
-		playerVelocity += Vector3(get_floor_normal().x,0,get_floor_normal().z) * jumpSpeed
+		# only apply if it would make you go faster because going slower up a ramp is lame
+		if ((playerVelocity+ get_floor_normal()*Vector3(1,0,1) * jumpSpeed).length() > playerVelocity.length() ):
+			playerVelocity += get_floor_normal()*Vector3(1,0,1) * jumpSpeed
 #		wishJump = false
 	
 
