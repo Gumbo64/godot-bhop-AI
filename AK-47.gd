@@ -59,11 +59,13 @@ var cmd =  {
 	"rightMove": 0,
 	"forwardMove":0
 }
-
+var spawnpos = Vector3.ZERO
 func _ready():
 	#hides the cursor
+	spawnpos = global_transform.origin
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	raycast.add_exception(get_node("/root/Spatial/Player"))
+
 	
 onready var head = $Head
 onready var camera = $Head/Camera
@@ -104,7 +106,12 @@ func fire():
 				var b = b_decal.instance()
 				raycast.get_collider().add_child(b)
 				b.global_transform.origin = raycast.get_collision_point()
-				b.look_at(raycast.get_collision_point() + raycast.get_collision_normal(), Vector3.UP)
+				b.look_at(raycast.get_collision_point() + (raycast.get_collision_normal().cross(Vector3(0,1,0)) + raycast.get_collision_normal()*Vector3.UP).normalized(), Vector3.UP)
+#				global_transform.origin = raycast.get_collision_point() + Vector3(0,10,0)
+#		anim_player.play("AssaultFire")
+	if Input.is_action_pressed("rightfire"):
+			if raycast.is_colliding():
+				global_transform.origin = raycast.get_collision_point() + Vector3(0,10,0)
 #		anim_player.play("AssaultFire")
 	else:
 		pass
@@ -115,7 +122,7 @@ var snap
 var gravity_vec = Vector3.ZERO
 var direction
 var velocity
-
+var dotspeed
 func _physics_process(delta):
 	fire()
 	frameCount +=1
@@ -144,11 +151,16 @@ func _physics_process(delta):
 #	global_transform.origin += playerVelocity * delta
 
 #	print(playerVelocity.y)
-	
+					
 	move_and_slide_with_snap(playerVelocity,snap,Vector3.UP)
 	
+
+#	for i in get_slide_count():
+#		var collision = get_slide_collision(i)
+#		print("Collided with: ", collision.normal)
+
 	if(global_transform.origin[1]<0):
-		global_transform.origin[1] = 50
+		global_transform.origin = spawnpos
 	#Need to move the camera after the player has been moved because otherwise the camera will clip the player if going fast enough and will always be 1 frame behind.
 	# Set the camera's position to the transform
 #	playerView.position = this.transform.position

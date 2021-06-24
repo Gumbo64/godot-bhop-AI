@@ -8,7 +8,7 @@ extends RichTextLabel
 onready var playernode = get_node("/root/Spatial/Player")
 # Called when the node enters the scene tree for the first time.
 func _process(delta):
-	set_text(str(playernode.playerVelocity) + "\n" + str((playernode.playerVelocity*Vector3(1,0,1)).length()) + "\n" +  str(playernode.wishJump))
+	set_text(str(playernode.playerVelocity) + "\n" + str((playernode.playerVelocity*Vector3(1,0,1)).length()) + "\n" +  str(playernode.is_on_floor()))
 	pass # Replace with function body.
 
 
