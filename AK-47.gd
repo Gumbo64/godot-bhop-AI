@@ -51,6 +51,8 @@ var playerTopVelocity = 0.0
 ## Q3: players can queue the next jump just before he hits the ground
 var wishJump = true
 
+
+
 ## Used to display real time friction values
 var playerFriction = 0.0
 
@@ -124,6 +126,7 @@ var direction
 var velocity
 var dotspeed
 func _physics_process(delta):
+
 	fire()
 	frameCount +=1
 	dt +=delta
@@ -154,7 +157,18 @@ func _physics_process(delta):
 					
 	move_and_slide_with_snap(playerVelocity,snap,Vector3.UP)
 	
+#	var collision = move_and_collide(playerVelocity*delta)
+#
+	if wishJump and get_slide_count():
+		
+		var collision = get_slide_collision(0)
+		var reflect = collision.remainder.bounce(collision.normal)
+		
 
+		playerVelocity = playerVelocity.bounce(collision.normal)
+		move_and_slide_with_snap(reflect,snap,Vector3.UP)
+#
+#	move_and_slide_with_snap(Vector3.ZERO,snap,Vector3.UP)
 #	for i in get_slide_count():
 #		var collision = get_slide_collision(i)
 #		print("Collided with: ", collision.normal)
@@ -318,10 +332,12 @@ func GroundMove(delta):
 	playerVelocity.y = 0
 	
 	if(wishJump):
+
 		playerVelocity.y =  jumpSpeed
 		# only apply if it would make you go faster because going slower up a ramp is lame
 		if ((playerVelocity+ get_floor_normal()*Vector3(1,0,1) * jumpSpeed).length() > playerVelocity.length() ):
 			playerVelocity += get_floor_normal()*Vector3(1,0,1) * jumpSpeed
+#		playerVelocity += get_floor_normal()*Vector3(1,0,1) * jumpSpeed
 #		wishJump = false
 	
 
