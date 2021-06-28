@@ -108,7 +108,7 @@ func fire():
 				var b = b_decal.instance()
 				raycast.get_collider().add_child(b)
 				b.global_transform.origin = raycast.get_collision_point()
-				b.look_at(raycast.get_collision_point() + (raycast.get_collision_normal().cross(Vector3.UP)).normalized(), Vector3.UP)
+				b.look_at(raycast.get_collision_point() + (raycast.get_collision_normal().cross(Vector3(0,1,0)) + raycast.get_collision_normal()*Vector3.UP).normalized(), Vector3.UP)
 #				global_transform.origin = raycast.get_collision_point() + Vector3(0,10,0)
 #		anim_player.play("AssaultFire")
 	if Input.is_action_pressed("rightfire"):
@@ -154,22 +154,7 @@ func _physics_process(delta):
 #	global_transform.origin += playerVelocity * delta
 
 #	print(playerVelocity.y)
-	playerVelocity.y -= gravity * delta
-
-	if is_on_wall():
-		var wall_normal = get_slide_collision(get_slide_count()-1).normal
-		snap = -wall_normal
-
-		var newvec = wall_normal.cross(Vector3.UP).normalized()
-		var dotspeed = playerVelocity.dot(newvec)
-
-		var vertvec = (newvec).cross(Vector3.LEFT).normalized()
-		var vertdotspeed = playerVelocity.dot(vertvec)
-#
-		playerVelocity = newvec * dotspeed + vertvec * vertdotspeed 
-		
-
-		
+					
 	move_and_slide_with_snap(playerVelocity,snap,Vector3.UP)
 	
 #	var collision = move_and_collide(playerVelocity*delta)
@@ -269,7 +254,7 @@ func AirMove(delta):
 	# !CPM: Aircontrol
 
 	# Apply gravity
-	
+	playerVelocity.y -= gravity * delta
 	
 
 	# LEGACY MOVEMENT SEE BOTTOM
