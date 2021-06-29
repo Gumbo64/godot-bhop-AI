@@ -96,7 +96,7 @@ onready var anim_player = $AnimationPlayer
 onready var raycast = $Head/Camera/RayCast
 var damage = 10
 func fire():
-	if Input.is_action_pressed("fire"):
+	if Input.is_action_just_pressed("fire"):
 		if not anim_player.is_playing():
 #			camera.translation = lerp(camera.translation, 
 #					Vector3(rand_range(MAX_CAM_SHAKE, -MAX_CAM_SHAKE), 
@@ -111,7 +111,7 @@ func fire():
 				b.look_at(raycast.get_collision_point() + (raycast.get_collision_normal().cross(Vector3(0,1,0)) + raycast.get_collision_normal()*Vector3.UP).normalized(), Vector3.UP)
 #				global_transform.origin = raycast.get_collision_point() + Vector3(0,10,0)
 #		anim_player.play("AssaultFire")
-	if Input.is_action_pressed("rightfire"):
+	if Input.is_action_just_pressed("rightfire"):
 			if raycast.is_colliding():
 				global_transform.origin = raycast.get_collision_point() + Vector3(0,10,0)
 #		anim_player.play("AssaultFire")
@@ -159,14 +159,22 @@ func _physics_process(delta):
 	
 #	var collision = move_and_collide(playerVelocity*delta)
 #
-	if wishJump and get_slide_count():
+	if Input.is_action_pressed("jump") and get_slide_count():
+		
 		
 		var collision = get_slide_collision(0)
-		var reflect = collision.remainder.bounce(collision.normal)
-		
-
-		playerVelocity = playerVelocity.bounce(collision.normal)
-		move_and_slide_with_snap(reflect,snap,Vector3.UP)
+#		this is the MAX angle to surf on
+		var FLOOR_ANGLE_TOLERANCE = 60
+		print([rad2deg(acos(collision.normal.dot(Vector3.UP))),FLOOR_ANGLE_TOLERANCE,rad2deg(acos(collision.normal.dot(Vector3.UP))) <= FLOOR_ANGLE_TOLERANCE])
+		if (rad2deg(acos(collision.normal.dot(Vector3.UP))) <= FLOOR_ANGLE_TOLERANCE):
+			var reflect = collision.remainder.bounce(collision.normal)
+			playerVelocity = playerVelocity.bounce(collision.normal)
+			move_and_slide_with_snap(reflect,snap,Vector3.UP)
+		else:
+			var remainder = collision.remainder.bounce(collision.normal)
+			playerVelocity = playerVelocity.slide(collision.normal)
+#			move_and_slide_with_snap(reflect,snap,Vector3.UP)
+			
 #
 #	move_and_slide_with_snap(Vector3.ZERO,snap,Vector3.UP)
 #	for i in get_slide_count():
