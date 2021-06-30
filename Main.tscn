@@ -1,7 +1,7 @@
 [gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://addons/qodot/src/nodes/qodot_map.gd" type="Script" id=1]
-[ext_resource path="res://AK-47.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Playable.tscn" type="PackedScene" id=2]
 [ext_resource path="res://addons/qodot/game_definitions/fgd/qodot_fgd.tres" type="Resource" id=3]
 [ext_resource path="res://textures/PNG/Light/texture_07.png" type="Texture" id=4]
 [ext_resource path="res://gridmaterial.tres" type="Material" id=5]
@@ -101,9 +101,6 @@ points = PoolVector3Array( 341.794, 174.951, -168.291, 341.794, 77.2948, -168.29
 [node name="Spatial" type="Spatial"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5582, 0.443707, 1.5763 )
 
-[node name="Player" parent="." instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5.35729, 154.761, -2.02406 )
-
 [node name="QodotMap2" type="Spatial" parent="."]
 script = ExtResource( 1 )
 map_file = "/home/rory/Desktop/godot/fps-godot/maps/bhop.map"
@@ -160,10 +157,13 @@ shape = SubResource( 11 )
 [node name="entity_0_brush_9_collision_shape" type="CollisionShape" parent="QodotMap2/entity_0_worldspawn"]
 shape = SubResource( 12 )
 
+[node name="Player" parent="." instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 150.549, 0.589006 )
+
 [node name="QodotMap" type="Spatial" parent="."]
-transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 40.2297, -3.31766, 97.2862 )
+transform = Transform( 0.4, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 31.7336, 45.1153 )
 script = ExtResource( 1 )
-map_file = "/home/rory/Desktop/godot/fps-godot/maps/test.map"
+map_file = "E:/Users/Rory/Downloads/fps-godot/maps/test.map"
 inverse_scale_factor = 16.0
 entity_fgd = ExtResource( 3 )
 base_texture_dir = "res://textures"
