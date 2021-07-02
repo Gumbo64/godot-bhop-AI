@@ -1,0 +1,13 @@
+[remap]
+
+importer="qodot.map"
+type="Resource"
+path="res://.import/surf.map-dca895a745f51c9a09848355dcede2b4.tres"
+
+[deps]
+
+source_file="res://maps/surf.map"
+dest_files=[ "res://.import/surf.map-dca895a745f51c9a09848355dcede2b4.tres" ]
+
+[params]
+
