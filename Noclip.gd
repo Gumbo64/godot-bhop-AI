@@ -14,7 +14,7 @@ var friction  = 6
 #        # Ground friction
 
 ## Movement stuff */
-var moveSpeed               = 1000
+var moveSpeed               = 600
 ## Ground move speed
 var jumpSpeed               = 100
 ## The speed at which the character's up axis gains when hitting jump
@@ -76,6 +76,7 @@ func _ready():
 	
 onready var head = $Head
 onready var camera = $Head/Camera
+onready var playernode = get_node("/root/Spatial/AI")
 func _input(event):
 	if event is InputEventMouseMotion:
 		rotate_y(deg2rad(-event.relative.x * xMouseSensitivity))
@@ -85,7 +86,7 @@ func _input(event):
 		
 var cam_accel =  100
 func _process(delta):
-	
+
 		#camera physics interpolation to reduce physics jitter on high refresh-rate monitors
 	if Engine.get_frames_per_second() > Engine.iterations_per_second:
 		camera.set_as_toplevel(true)
@@ -100,21 +101,13 @@ onready var b_decal = preload("res://BulletDecal.tscn")
 onready var anim_player = $AnimationPlayer
 onready var raycast = $Head/Camera/RayCast
 var damage = 10
+onready var bodynode = preload("res://BHOP_SCENE.tscn")
 func fire():
-	if Input.is_action_just_pressed("fire"):
-		if not anim_player.is_playing():
-#			camera.translation = lerp(camera.translation, 
-#					Vector3(rand_range(MAX_CAM_SHAKE, -MAX_CAM_SHAKE), 
-#					rand_range(MAX_CAM_SHAKE, -MAX_CAM_SHAKE), 0), 0.5)
-			if raycast.is_colliding():
-				var target = raycast.get_collider()
-				if target.is_in_group("Enemy"):
-					target.health -= damage
-				var b = b_decal.instance()
-				raycast.get_collider().add_child(b)
-				b.global_transform.origin = raycast.get_collision_point()
-				b.look_at(raycast.get_collision_point() + (raycast.get_collision_normal().cross(Vector3(0,1,0)) + raycast.get_collision_normal()*Vector3.UP).normalized(), Vector3.UP)
-#				global_transform.origin = raycast.get_collision_point() + Vector3(0,10,0)
+#	if Input.is_action_just_pressed("fire"):
+#
+#		var body = bodynode.instance()
+#		body.global_transform.origin = Vector3(0,150,0)
+#		get_node("/root/Spatial/").add_child(body)
 #		anim_player.play("AssaultFire")
 	if Input.is_action_just_pressed("rightfire"):
 			if raycast.is_colliding():

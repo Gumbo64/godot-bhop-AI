@@ -1,9 +1,11 @@
-[gd_scene load_steps=44 format=2]
+[gd_scene load_steps=46 format=2]
 
 [ext_resource path="res://addons/qodot/src/nodes/qodot_map.gd" type="Script" id=1]
 [ext_resource path="res://addons/qodot/game_definitions/fgd/qodot_fgd.tres" type="Resource" id=2]
-[ext_resource path="res://textures/PNG/Light/texture_07.png" type="Texture" id=3]
+[ext_resource path="res://Images/cement.png" type="Texture" id=3]
 [ext_resource path="res://gridmaterial.tres" type="Material" id=4]
+[ext_resource path="res://gunmaterial.tres" type="Material" id=5]
+[ext_resource path="res://textures/metal.jpg" type="Texture" id=6]
 
 [sub_resource type="SpatialMaterial" id=1]
 flags_world_triplanar = true
@@ -154,7 +156,7 @@ points = PoolVector3Array( -71.6879, 29.4824, -16, -73.3262, 28.3353, -16, -68.7
 
 [sub_resource type="SpatialMaterial" id=37]
 flags_world_triplanar = true
-albedo_texture = ExtResource( 3 )
+albedo_texture = ExtResource( 6 )
 uv1_triplanar = true
 
 [sub_resource type="ArrayMesh" id=38]
@@ -222,7 +224,7 @@ shape = SubResource( 7 )
 shape = SubResource( 8 )
 
 [node name="QodotMap2" type="Spatial" parent="."]
-transform = Transform( -1.49502e-08, 4.10753e-08, 1, 0.939693, 0.34202, 0, -0.34202, 0.939693, -4.37114e-08, 0.263062, -44.9074, 250.742 )
+transform = Transform( -1.49502e-08, 4.10753e-08, 1, 0.939693, 0.34202, 0, -0.34202, 0.939693, -4.37114e-08, 0.263062, -45.0941, 250.742 )
 script = ExtResource( 1 )
 map_file = "/home/rory/Desktop/godot/fps-godot/maps/surf.map"
 inverse_scale_factor = 16.0
@@ -347,7 +349,7 @@ shape = SubResource( 35 )
 [node name="entity_0_brush_11_collision_shape" type="CollisionShape" parent="QodotMap3/entity_0_worldspawn"]
 shape = SubResource( 36 )
 
-[node name="QodotMap4" type="Spatial" parent="."]
+[node name="Finish" type="Spatial" parent="."]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, -64.8189, 551.176 )
 script = ExtResource( 1 )
 map_file = "/home/rory/Desktop/godot/fps-godot/maps/mainplatform.map"
@@ -360,19 +362,19 @@ brush_clip_texture = "special/clip"
 face_skip_texture = "special/skip"
 texture_wads = [  ]
 material_file_extension = "tres"
-default_material = ExtResource( 4 )
+default_material = ExtResource( 5 )
 uv_unwrap_texel_size = 1.0
 print_profiling_data = false
 use_trenchbroom_group_hierarchy = false
 tree_attach_batch_size = 16
 set_owner_batch_size = 16
 
-[node name="entity_0_worldspawn" type="StaticBody" parent="QodotMap4"]
+[node name="Finish" type="StaticBody" parent="Finish"]
 
-[node name="entity_0_mesh_instance" type="MeshInstance" parent="QodotMap4/entity_0_worldspawn"]
+[node name="entity_0_mesh_instance" type="MeshInstance" parent="Finish/Finish"]
 use_in_baked_light = true
 mesh = SubResource( 38 )
 material/0 = null
 
-[node name="entity_0_brush_0_collision_shape" type="CollisionShape" parent="QodotMap4/entity_0_worldspawn"]
+[node name="entity_0_brush_0_collision_shape" type="CollisionShape" parent="Finish/Finish"]
 shape = SubResource( 39 )

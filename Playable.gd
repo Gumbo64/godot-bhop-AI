@@ -64,10 +64,11 @@ var cmd =  {
 var spawnpos = Vector3.ZERO
 func _ready():
 	#hides the cursor
+	
 	spawnpos = global_transform.origin
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	raycast.add_exception(get_node("/root/Spatial/Player"))
-
+	raycast.add_exception(get_node("/root/Main/Player"))
+	reset()
 	
 onready var head = $Head
 onready var camera = $Head/Camera
@@ -158,15 +159,19 @@ func _physics_process(delta):
 	move_and_slide_with_snap(playerVelocity,snap,Vector3.UP)
 	
 #	var collision = move_and_collide(playerVelocity*delta)
-#
-	if Input.is_action_pressed("jump") and get_slide_count():
-		
+	for i in range(get_slide_count()):
+		if (get_slide_collision(i).collider.name == "Finish"):
+			reset()
+			
+#	This part is what happens when you
+	if get_slide_count():
 		
 		var collision = get_slide_collision(0)
+		
 #		this is the MAX angle to surf on
 		var FLOOR_ANGLE_TOLERANCE = 60
 #		print([rad2deg(acos(collision.normal.dot(Vector3.UP))),FLOOR_ANGLE_TOLERANCE,rad2deg(acos(collision.normal.dot(Vector3.UP))) <= FLOOR_ANGLE_TOLERANCE])
-		if (rad2deg(acos(collision.normal.dot(Vector3.UP))) <= FLOOR_ANGLE_TOLERANCE):
+		if ( Input.is_action_pressed("jump") and rad2deg(acos(collision.normal.dot(Vector3.UP))) <= FLOOR_ANGLE_TOLERANCE):
 			var reflect = collision.remainder.bounce(collision.normal)
 			playerVelocity = playerVelocity.bounce(collision.normal)
 			move_and_slide_with_snap(reflect,snap,Vector3.UP)
@@ -174,19 +179,24 @@ func _physics_process(delta):
 			var remainder = collision.remainder.bounce(collision.normal)
 			playerVelocity = playerVelocity.slide(collision.normal)
 #			move_and_slide_with_snap(reflect,snap,Vector3.UP)
-			
-#
-#	move_and_slide_with_snap(Vector3.ZERO,snap,Vector3.UP)
-#	for i in get_slide_count():
-#		var collision = get_slide_collision(i)
-#		print("Collided with: ", collision.normal)
+
+
 
 	if(global_transform.origin[1]<0):
-		global_transform.origin = spawnpos
+		reset()
+		
 	#Need to move the camera after the player has been moved because otherwise the camera will clip the player if going fast enough and will always be 1 frame behind.
 	# Set the camera's position to the transform
 #	playerView.position = this.transform.position
 #	playerView.position.y = this.transform.position.y + playerViewYOffset
+
+
+func reset():
+	global_transform.origin = spawnpos
+	rotation = Vector3(0,PI,0)
+	camera.rotation=Vector3.ZERO
+	head.rotation=Vector3.ZERO
+	playerVelocity = Vector3(0,0,20)
 
 ##******************************************************************************************************\
 #|* MOVEMENT
@@ -196,14 +206,14 @@ func _physics_process(delta):
 # * Sets the movement direction based on player input
 # */
 func SetMovementDir():
-
 	cmd.forwardMove = Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
-	cmd.rightMove   = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+	cmd.rightMove = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
 
 
 ##*
 # * Queues the next jump just like in Q3
 # */
+
 func QueueJump():
 	if(holdJumpToBhop):
 		wishJump = Input.is_action_pressed("jump")
@@ -239,7 +249,7 @@ func AirMove(delta):
 	
 	wishspeed *= moveSpeed
 
-	wishdir=wishdir.normalized()
+	wishdir = wishdir.normalized()
 	moveDirectionNorm = wishdir
 
 	# CPM: Aircontrol
