@@ -1,15 +1,19 @@
-extends RichTextLabel
+extends Spatial
 
 
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
 
-onready var mainnode = get_node("/root/Main/")
+
 # Called when the node enters the scene tree for the first time.
-func _process(delta):
-	set_text(str(mainnode.bestfitness))
-	pass # Replace with function body.
+func _ready():
+	for i in self.get_children():
+		i.get_child(0).name = i.name
+		print(i.name)
+		print(i.get_child(0).name)
+	print('Renamed map')
+
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

@@ -6,9 +6,9 @@ var time = 0
 # total_time gets reset every time a new generation is started
 var total_time = 0
 # every time_step the cars network takes sensory information and decides how to act
-var time_step = 0.001
+var time_step = 0.000001
 # every generation_step a new generation is made. this gets increased over time.
-var generation_step = 30
+var generation_step = 20
 
 # path to the car scene that will be controlled by the AI
 var agent_body_path = "res://BHOP_SCENE.tscn"
@@ -18,7 +18,7 @@ var agent_body_path = "res://BHOP_SCENE.tscn"
 var ga = GeneticAlgorithm.new(15, 1, agent_body_path, true)
 #var ga = GeneticAlgorithm.new(15, 1, agent_body_path, true, "car_params")
 # end the demo when the first car reaches this. TAU (360 degrees) = complete one track
-var fitness_threshold = 9000000
+#var fitness_threshold = 9000000
 
 # when the first car reaches the halfway checkpoint, the generation time gets increased
 #
@@ -32,12 +32,16 @@ func _ready():
 var paused = false
 
 onready var pop_node = get_node("/root/Main/Population")
+var bestfitness = 0
+
+
 
 func _physics_process(delta) -> void:
 	"""Car agents update their networks every time_step seconds, and then drive
 	according to the networks output. If generation_step time has passed, start a
 	new generation.
 	"""
+
 	if not paused:
 		# update time since last update
 		time += delta; total_time += delta
@@ -49,9 +53,10 @@ func _physics_process(delta) -> void:
 		if total_time > generation_step or ga.all_agents_dead:
 			# check if the best agent exceeded the fitness threshold
 			ga.evaluate_generation()
-			if ga.curr_best.fitness > fitness_threshold:
+			if ga.curr_best.fitness > bestfitness:
+				bestfitness = ga.curr_best.fitness
 				# either resume with next generation or switch to demo-choosing scene
-				pass
+#				pass
 			# go to the next gen
 			ga.next_generation()
 			place_bodies(ga.get_curr_bodies())

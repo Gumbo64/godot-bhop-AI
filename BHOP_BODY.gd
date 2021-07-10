@@ -74,12 +74,9 @@ func _ready():
 	reset()
 	
 	
-onready var camera = $Head/Camera
+
 onready var feelers = $Feelers
 
-		
-onready var b_decal = preload("res://BulletDecal.tscn")
-onready var anim_player = $AnimationPlayer
 
 var damage = 10
 
@@ -103,6 +100,7 @@ func getRaycastCollisions():
 		if i.is_colliding():
 			var origin = i.global_transform.origin
 			var collision_point = i.get_collision_point()
+			Lines3D.DrawLine(i.global_transform.origin, collision_point, Color(1, 0, 0),0.0)
 			distance = origin.distance_to(collision_point)
 		else:
 			distance = 100
@@ -113,6 +111,7 @@ func getRaycastCollisions():
 
 var output = [0]
 var lastoutput = 0
+var touchedplatforms = []
 # FP = Finish platform
 onready var FP = get_node("/root/Main/Map/Finish/Finish")
 func sense():
@@ -140,16 +139,17 @@ func get_fitness():
 		reward -= 1000
 	else:
 		for i in range(get_slide_count()):
-			if (get_slide_collision(i).collider.name == "Finish"):
+			if (get_slide_collision(i).collider.name.left(6) == "Finish"):
 				reward += 1000
 				break
-	reward -= dt
+	reward -= dt/100
+	reward += touchedplatforms.size() * 1000 
 	return reward
 
 signal death
 func act(x):
 	output = x
-#	Lines3D.DrawLine(feeler.global_transform, global_transform.origin, Color(1, 0, 0),0.0)
+
 	var deltat = 0.016667
 	frameCount +=1
 	dt +=deltat
@@ -178,9 +178,12 @@ func act(x):
 		emit_signal("death")
 	else:
 		for i in range(get_slide_count()):
-			if (get_slide_collision(i).collider.name == "Finish"):
+			if (get_slide_collision(i).collider.name.left(6) == "Finish" or get_slide_collision(i).collider.name.left(3) == "Die"  ):
 				emit_signal("death")
 				break
+			else:
+				if(not touchedplatforms.has(get_slide_collision(i).collider.name)):
+					touchedplatforms.push_back(get_slide_collision(i).collider.name)
 
 			
 #	This part is what happens when you
@@ -258,7 +261,7 @@ func AirMove(deltat):
 
 
 	
-#	print(get_global_transform().basis)
+#	get_global_transform().basis)
 	wishdir = Vector3(cmd.rightMove, 0, cmd.forwardMove)
 	wishdir = wishdir.rotated(Vector3.UP, global_transform.basis.get_euler().y)
 #	wishdir = to_global(wishdir)
