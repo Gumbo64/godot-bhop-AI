@@ -71,13 +71,15 @@ func _ready():
 	#hides the cursor
 	spawnpos = global_transform.origin
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	raycast.add_exception(get_node("/root/Spatial/Player"))
+#	raycast.add_exception(get_node("/root/Spatial/Player"))
 
 	
 onready var head = $Head
 onready var camera = $Head/Camera
-onready var playernode = get_node("/root/Spatial/AI")
+var mousetoggle = true
+var linetoggle = true
 func _input(event):
+
 	if event is InputEventMouseMotion:
 		rotate_y(deg2rad(-event.relative.x * xMouseSensitivity))
 		head.rotate_x(deg2rad(-event.relative.y * yMouseSensitivity))
@@ -85,9 +87,28 @@ func _input(event):
 		
 		
 var cam_accel =  100
+var changespeed = true
+onready var mainnode = get_node("/root/Main/")
 func _process(delta):
-
-		#camera physics interpolation to reduce physics jitter on high refresh-rate monitors
+	if Input.is_action_pressed("mousetoggle"):
+		if mousetoggle:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		mousetoggle = not mousetoggle
+	if Input.is_action_just_pressed("changespeed"):
+		if changespeed:
+			mainnode.time_step = 0.016667
+		else:
+			mainnode.time_step = 0
+		changespeed = not changespeed
+#	if Input.is_action_just_pressed("linetoggle"):
+#		if linetoggle:
+#			mainnode.time_step = 0.016667
+#		else:
+#			mainnode.time_step = 0
+#		changespeed = not changespeed
+#		#camera physics interpolation to reduce physics jitter on high refresh-rate monitors
 	if Engine.get_frames_per_second() > Engine.iterations_per_second:
 		camera.set_as_toplevel(true)
 		camera.global_transform.origin = camera.global_transform.origin.linear_interpolate(head.global_transform.origin, cam_accel * delta)

@@ -72,7 +72,15 @@ func _ready():
 	
 onready var head = $Head
 onready var camera = $Head/Camera
+var mousetoggle
 func _input(event):
+	if event.is_action_pressed("mousetoggle"):
+		if mousetoggle:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		mousetoggle = not mousetoggle
+			
 	if event is InputEventMouseMotion:
 		rotate_y(deg2rad(-event.relative.x * xMouseSensitivity))
 		head.rotate_x(deg2rad(-event.relative.y * yMouseSensitivity))

@@ -1,0 +1,34 @@
+[remap]
+
+importer="texture"
+type="StreamTexture"
+path="res://.import/icon_audio_bus_mute.svg-9bcdc57f7d83a28f5f2b34e9b78e462a.stex"
+metadata={
+"vram_texture": false
+}
+
+[deps]
+
+source_file="res://godot-3.3.2-stable/editor/icons/icon_audio_bus_mute.svg"
+dest_files=[ "res://.import/icon_audio_bus_mute.svg-9bcdc57f7d83a28f5f2b34e9b78e462a.stex" ]
+
+[params]
+
+compress/mode=0
+compress/lossy_quality=0.7
+compress/hdr_mode=0
+compress/bptc_ldr=0
+compress/normal_map=0
+flags/repeat=0
+flags/filter=true
+flags/mipmaps=false
+flags/anisotropic=false
+flags/srgb=2
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/HDR_as_SRGB=false
+process/invert_color=false
+stream=false
+size_limit=0
+detect_3d=true
+svg/scale=1.0
