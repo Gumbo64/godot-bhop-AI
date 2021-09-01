@@ -5,10 +5,11 @@ extends RichTextLabel
 # var a = 2
 # var b = "text"
 
-onready var mainnode = get_node("/root/Main/")
+#onready var AI = get_node("/root/Main/AI")
+onready var AI = get_node("/root/AI")
 # Called when the node enters the scene tree for the first time.
 func _process(delta):
-	set_text(str(mainnode.bestfitness))
+	set_text(str(AI.deathcount()))
 	pass # Replace with function body.
 
 

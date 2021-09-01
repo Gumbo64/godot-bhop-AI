@@ -134,10 +134,11 @@ var gravity_vec = Vector3.ZERO
 var direction
 var velocity
 var dotspeed
-func _physics_process(delta):
 
+
+
+func _physics_process(delta):
 	fire()
-	frameCount +=1
 	dt +=delta
 
 #	# Movement, here's the important part */
@@ -168,7 +169,7 @@ func _physics_process(delta):
 	
 #	var collision = move_and_collide(playerVelocity*delta)
 	for i in range(get_slide_count()):
-		if (get_slide_collision(i).collider.name == "Finish"):
+		if (get_slide_collision(i).collider.name == "Finish" or get_slide_collision(i).collider.name[0] == "D"):
 			reset()
 			
 #	This part is what happens when you

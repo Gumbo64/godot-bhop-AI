@@ -1,22 +1,20 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://map.tscn" type="PackedScene" id=1]
 [ext_resource path="res://BHOP_SCENE.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Noclip.tscn" type="PackedScene" id=3]
-[ext_resource path="res://BHOP_MAIN.gd" type="Script" id=4]
 
 [node name="Main" type="Spatial"]
-script = ExtResource( 4 )
 
-[node name="Spectator" parent="." instance=ExtResource( 3 )]
-transform = Transform( -0.00607372, 0, -0.999982, 0, 1, 0, 0.999982, 0, -0.00607372, -49.24, 120.737, -3.57628e-07 )
+[node name="Player" parent="." instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -16.9213, 123.569, 51.7218 )
 
 [node name="Population" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.279, 117.402, -7.769 )
+visible = false
 
 [node name="Map" parent="." instance=ExtResource( 1 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 111.28, 0 )
 
-[node name="AI" parent="." instance=ExtResource( 2 )]
-transform = Transform( -1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -0.279, 117.402, -7.769 )
-visible = false
+[node name="BHOP" parent="." instance=ExtResource( 2 )]
+transform = Transform( -1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -0.279, 115.024, 3.95715 )

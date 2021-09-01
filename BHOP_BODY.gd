@@ -61,10 +61,23 @@ var cmd =  {
 	"rightMove": 0,
 	"forwardMove":0
 }
-var spawnpos = Vector3(-0.279,117.402,-7.769)
-func _ready():
-	#hides the cursor
+var spawnpos
 
+
+
+#onready var AI = get_node("/root/Main/AI")
+onready var AI = get_node("/root/AI")
+
+#
+#var AI = load("res://AI.py").new()
+
+#var timespeed = 100
+func _ready():
+#	Engine.set_time_scale(timespeed)
+	spawnpos = get_node("/root/Main/BHOP").global_transform.origin
+	rewardtrackers['startdistance']=((global_transform.origin - FP.global_transform.origin)*Vector3(1,0,1)).length()
+	rewardtrackers['lastdistance']=rewardtrackers['startdistance']
+	#hides the cursor
 #	spawnpos = global_transform.origin
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
@@ -72,6 +85,15 @@ func _ready():
 #		raycast.add_exception(get_node("/root/Spatial/Player"))
 #		raycast.add_exception(get_node("/root/Spatial/AI"))
 	reset()
+	score=0
+	done=false
+	reset()
+	observation=sense()
+#	AI.ready()
+	
+	
+	
+
 	
 	
 
@@ -86,11 +108,75 @@ var direction
 var velocity
 var dotspeed
 var wishjump = true
-var lastaction = 0
+
+
+
+
+var scores = []
+var avg_scores = []
+var eps_history = []
+var done=false
+var score=0
+var observation
+var observation_
+var reward
+var info
+var avg_score
+var action 
+
+func average(array):
+	var sum = 0
+	for num in array:
+		sum += num
+	return sum/array.size()
+
+# newest/last x entries in array
+func newest(array,x):
+	var newarray=[]
+	array = array.invert()
+	for i in range(min(x,array.size())):
+		newarray.push_back(array[i])
+	return newarray
+	
+	
 
 func _physics_process(delta):
-#	move(delta)
+
+
+	action = AI.get_action(observation)
+	rewardtrackers['stepcount']+=1
+#	print(action)
+	var t = step(action)
+
+	
+	
+	observation_ = t[0]
+	reward = t[1]
+	done=t[2]
+	info= t[3]
+	
+	score += reward
+#	print([observation,action,reward,observation_,done])
+	AI.store_transition(observation,action,reward,observation_,done)
+	AI.learn()
+	observation=observation_
+	if done:
+		AI.died()
+
+		print('Score: '+str(score))
+		scores.push_back(score)
+#		print(score)
+#		eps_history.push_back(AI.get_epsilon())
+		
+#		avg_score=average(newest(scores,20))
+#		avg_scores.push_back(avg_score)
+		
+		score=0
+		done=false
+		reset()
+		observation=sense()
 	pass
+		
 
 
 func getRaycastCollisions():
@@ -100,95 +186,132 @@ func getRaycastCollisions():
 		if i.is_colliding():
 			var origin = i.global_transform.origin
 			var collision_point = i.get_collision_point()
-			Lines3D.DrawLine(i.global_transform.origin, collision_point, Color(1, 0, 0),0.0)
+#			Lines3D.DrawLine(i.global_transform.origin, collision_point, Color(0, 1, 0),0.0)
 			distance = origin.distance_to(collision_point)
 		else:
-			distance = 100
-		raycastarray.push_back(distance/100)
+			distance = 50
+		raycastarray.push_back(distance/50)
 		
 	return raycastarray
 		
 
 var output = [0]
-var lastoutput = 0
-var touchedplatforms = []
 # FP = Finish platform
 onready var FP = get_node("/root/Main/Map/Finish/Finish")
+
+
+
+#   this is the function to get inputs
 func sense():
-	var distance = (global_transform.origin - FP.global_transform.origin).length()
-	var angle2platform = Vector2(global_transform.origin.x,global_transform.origin.z).angle_to(Vector2(FP.global_transform.origin.x,FP.global_transform.origin.z))
+	var playerVelocity2D = Vector2(playerVelocity.x,playerVelocity.z)
+	var FP_difference = FP.global_transform.origin-global_transform.origin
+	FP_difference = Vector2(FP_difference.x,FP_difference.z)
+	
+#	var angle2platform = Vector2(global_transform.origin.x,global_transform.origin.z).angle_to(Vector2(FP.global_transform.origin.x,FP.global_transform.origin.z))
 	# Remember velocity angle = player angle
-	var angledifference = rotation.y - angle2platform
+#	var angledifference = rotation.y - angle2platform
 	
 	var sensearray = []
+	
+#	RELATIVE Velocity
+#	Vertical, forward (only forward is needed since we are always facing the direction of velocity
 	sensearray.push_back(playerVelocity.y/30)
-	sensearray.push_back(angledifference/PI)
-	sensearray.push_back(distance/600)
-	sensearray.push_back((global_transform.origin.y - FP.global_transform.origin.y)/200)
-	sensearray.push_back(lastoutput)
+	sensearray.push_back(playerVelocity2D.length()/40)
+	
+	
+#	Platform/FP RELATIVE direction x and z (normalised vector)
+
+#	forward
+	var FP_direction = Vector2(FP_difference.dot(playerVelocity2D),FP_difference.dot((playerVelocity2D).rotated(deg2rad(-90)))).normalized()
+
+	sensearray.push_back(FP_direction.y)
+#	sideways
+	sensearray.push_back(FP_direction.x)
+
+#	Past information
+	sensearray.push_back(actionbook[rewardtrackers['lastaction']][0])
+	sensearray.push_back(actionbook[rewardtrackers['lastaction']][1])
+	
+#	Raycasts
 	sensearray.append_array(getRaycastCollisions())
-	lastoutput = output[0]
+#	print(sensearray)
 	return sensearray
 
 
-func get_fitness():
-	var reward = 5000
-	var distance = (global_transform.origin - FP.global_transform.origin).length()
-	reward -= distance / 100
-	if(global_transform.origin[1]<0):
-		reward -= 1000
-	else:
-		for i in range(get_slide_count()):
-			if (get_slide_collision(i).collider.name.left(6) == "Finish"):
-				reward += 1000
-				break
-	reward -= dt/100
-	reward += touchedplatforms.size() * 1000 
+
+var rewardtrackers = {
+	'lastdistance': 0,
+	'lastaction':0,
+	'startdistance':0,
+	'touchedplatforms':['plat1'],
+	'stepcount':0
+}
+
+func distance_reward():
+#	only rewards for horizontal distance not vertical since it can't really control that 
+	var distance = ((global_transform.origin - FP.global_transform.origin)*Vector3(1,0,1)).length()
+
+	var reward = 1-pow(distance/(rewardtrackers['startdistance']+10),0.4)
+	
+#	rewardtrackers['lastdistance']=distance
+
 	return reward
 
-signal death
-func act(x):
-	output = x
+
+func step(action):
+	
+	var s_observation_
+	var finish_reward=0
+	var s_done
+	var s_info
+	
+	
+#	print([action,(((action-2)/4.0)*2.0)])
+	
+	
+	
+	SetMovementDir(action)
+	
+
 
 	var deltat = 0.016667
 	frameCount +=1
-	dt +=deltat
 
 #	# Movement, here's the important part */
-	
 	QueueJump()
 	if(is_on_floor()):
 		snap = -get_floor_normal()
-
-		GroundMove(deltat)
-#		playerVelocity.y=0
-
+		GroundMove(deltat,wishdir)
 	else:
-
 		snap = Vector3.DOWN
-		AirMove(deltat)
-
+		AirMove(deltat,wishdir)
 	if wishJump and is_on_floor():
 		snap = Vector3.ZERO
-	
 	move_and_slide_with_snap(playerVelocity,snap,Vector3.UP)
-	
-
 	if(global_transform.origin[1]<0):
-		emit_signal("death")
+		finish_reward += -100
+		s_done = true
+		
 	else:
 		for i in range(get_slide_count()):
-			if (get_slide_collision(i).collider.name.left(6) == "Finish" or get_slide_collision(i).collider.name.left(3) == "Die"  ):
-				emit_signal("death")
+			if (get_slide_collision(i).collider.name.left(6) == "Finish"  ):
+				finish_reward = 10000
+				s_done = true
+				break
+			elif(get_slide_collision(i).collider.name.left(3) == "Die" ):
+				finish_reward = -100
+				s_done = true
 				break
 			else:
-				if(not touchedplatforms.has(get_slide_collision(i).collider.name)):
-					touchedplatforms.push_back(get_slide_collision(i).collider.name)
+				if(not rewardtrackers['touchedplatforms'].has(get_slide_collision(i).collider.name)):
+					rewardtrackers['touchedplatforms'].push_back(get_slide_collision(i).collider.name)
+					finish_reward += 50
+				
 
 			
-#	This part is what happens when you
+#	Surfing
+#	needs to be done after the finish/death collision detection because I'm pretty sure surfing works by pushing the player away from the surface, meaning it may not be actually touching anymore
 	if get_slide_count():
-		
 		var collision = get_slide_collision(0)
 		
 #		this is the MAX angle to surf on
@@ -201,12 +324,24 @@ func act(x):
 			var remainder = collision.remainder.bounce(collision.normal)
 			playerVelocity = playerVelocity.slide(collision.normal)
 #			move_and_slide_with_snap(reflect,snap,Vector3.UP)
+
+	
+	s_observation_ = sense()
+	
+	finish_reward += distance_reward()
+#	print(finish_reward)
+#	finish_reward = distance_reward()
+	return [s_observation_,finish_reward, s_done, s_info]
+	
 	
 
 
 
 
 func reset():
+	rewardtrackers['stepcount']=0
+	rewardtrackers['touchedplatforms']=['plat1']
+	rewardtrackers['lastdistance']=rewardtrackers['startdistance']
 	global_transform.origin = spawnpos
 	rotation = Vector3(0,PI,0)
 	playerVelocity = Vector3(0,0,20)
@@ -219,16 +354,33 @@ func reset():
 # * Sets the movement direction based on player input
 # */
 
-func SetMovementDir():
+
+var actionbook = {
+	0:[0,1],
+	1:[-1,0],
+	2:[1,0],
+	3:[0,-1],
+	
+	4:[1,-1],
+	5:[-1,-1],
+	6:[1,1],
+	7:[-1,1]
+}
+func SetMovementDir(xaction):
 #	
 #	playerVelocity=(playerVelocity*100).round()/100
 
-	
+#	print(xaction)
 	rotation = Vector3(0,atan2(playerVelocity.x,playerVelocity.z),0)
 #	we swap sin and cos because I want 0 degrees to be directly up
-	cmd.rightMove = output[0]
+
 	
-	lastaction = output[0]
+
+	cmd.rightMove = actionbook[xaction][0]
+	cmd.forwardMove = actionbook[xaction][1]
+	
+	rewardtrackers['lastaction']=xaction
+
 
 
 ##*
@@ -251,13 +403,13 @@ func QueueJump():
 var wishdir
 var wishvel
 
-func AirMove(deltat):
+func AirMove(deltat,wishdir):
 
-	var wishdir = Vector3.ZERO
+#	var wishdir = Vector3.ZERO
 	var wishvel  = airAcceleration
 	var accel 
 
-	SetMovementDir()
+#	SetMovementDir()
 
 
 	
@@ -345,8 +497,8 @@ func AirControl(wishdir, wishspeed,deltat ):
 #*
 # * Called every frame when the engine detects that the player is on the ground
 # */
-func GroundMove(deltat):
-	var wishdir = Vector3.ZERO
+func GroundMove(deltat,wishdir):
+#	var wishdir = Vector3.ZERO
 #	var wishvel = Vector3.ZERO
 
 	# Do not apply friction if the player is queueing up the next jump
@@ -355,7 +507,7 @@ func GroundMove(deltat):
 	else:
 		ApplyFriction(0,deltat)
 
-	SetMovementDir()
+#	SetMovementDir()
 
 	wishdir = Vector3(cmd.rightMove, 0, cmd.forwardMove)
 	wishdir = wishdir.rotated(Vector3.UP, global_transform.basis.get_euler().y)
@@ -429,7 +581,7 @@ func Accelerate(wishdir, wishspeed , accel ,deltat):
 	if(accelspeed > addspeed):
 		accelspeed = addspeed
 
-	playerVelocity.x += accelspeed * wishdir.x
+	playerVelocity.x += accelspeed * wishdir.x 
 	playerVelocity.z += accelspeed * wishdir.z
 
 

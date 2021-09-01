@@ -17,7 +17,7 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "BHOP_AI",
 "language": "GDScript",
-"path": "res://BHOP_AI.gd"
+"path": "res://OLD_BHOP_AI.gd"
 }, {
 "base": "KinematicBody",
 "class": "BHOP_BODY",
@@ -278,6 +278,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
+AI="*res://AI.py"
 Lines3D="*res://3D_Lines.gd"
 Innovations="*res://NEAT_code/innovations.gd"
 Params="*res://NEAT_code/params.gd"
@@ -290,6 +291,10 @@ window/size/fullscreen=true
 [editor_plugins]
 
 enabled=PoolStringArray( "res://addons/qodot/plugin.cfg" )
+
+[gdnative]
+
+singletons=[ "res://pythonscript.gdnlib" ]
 
 [global]
 

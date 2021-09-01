@@ -88,7 +88,7 @@ func _input(event):
 		
 var cam_accel =  100
 var changespeed = true
-onready var mainnode = get_node("/root/Main/")
+onready var mainnode = get_node("/root/Main/BHOP")
 func _process(delta):
 	if Input.is_action_pressed("mousetoggle"):
 		if mousetoggle:
@@ -98,9 +98,10 @@ func _process(delta):
 		mousetoggle = not mousetoggle
 	if Input.is_action_just_pressed("changespeed"):
 		if changespeed:
-			mainnode.time_step = 0.016667
+			mainnode.timespeed= 1000
 		else:
-			mainnode.time_step = 0
+			mainnode.timespeed = 1
+		Engine.set_time_scale(mainnode.timespeed)
 		changespeed = not changespeed
 #	if Input.is_action_just_pressed("linetoggle"):
 #		if linetoggle:
@@ -144,6 +145,10 @@ var gravity_vec = Vector3.ZERO
 var direction
 var velocity
 var dotspeed
+
+
+
+
 func _physics_process(delta):
 
 	fire()
@@ -157,8 +162,8 @@ func _physics_process(delta):
 	if Input.is_action_pressed("jump"):
 		playerVelocity.y += jumpSpeed
 	if Input.is_action_pressed("shift"):
-		playerVelocity.y -= jumpSpeed
-
+		playerVelocity.y-=jumpSpeed
+	
 	move_and_slide(playerVelocity)
 
 
