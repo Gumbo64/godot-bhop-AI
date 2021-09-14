@@ -9,65 +9,20 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Reference",
-"class": "Agent",
-"language": "GDScript",
-"path": "res://NEAT_code/agent.gd"
-}, {
-"base": "Reference",
-"class": "BHOP_AI",
-"language": "GDScript",
-"path": "res://OLD_BHOP_AI.gd"
-}, {
 "base": "KinematicBody",
 "class": "BHOP_BODY",
 "language": "GDScript",
 "path": "res://BHOP_BODY.gd"
-}, {
-"base": "Node",
-"class": "GeneticAlgorithm",
-"language": "GDScript",
-"path": "res://NEAT_code/ga.gd"
-}, {
-"base": "Reference",
-"class": "Genome",
-"language": "GDScript",
-"path": "res://NEAT_code/genome.gd"
-}, {
-"base": "Node2D",
-"class": "Highlighter",
-"language": "GDScript",
-"path": "res://NEAT_usability/gui/highlighter.gd"
 }, {
 "base": "LiquidLayer",
 "class": "LavaLayer",
 "language": "GDScript",
 "path": "res://addons/qodot/game_definitions/worldspawn_layers/liquid/lava.gd"
 }, {
-"base": "Reference",
-"class": "Link",
-"language": "GDScript",
-"path": "res://NEAT_code/links.gd"
-}, {
 "base": "Area",
 "class": "LiquidLayer",
 "language": "GDScript",
 "path": "res://addons/qodot/game_definitions/worldspawn_layers/liquid.gd"
-}, {
-"base": "CanvasLayer",
-"class": "NeatGUI",
-"language": "GDScript",
-"path": "res://NEAT_usability/gui/NeatGUI.gd"
-}, {
-"base": "Reference",
-"class": "NeuralNet",
-"language": "GDScript",
-"path": "res://NEAT_code/neuralnet.gd"
-}, {
-"base": "Reference",
-"class": "Neuron",
-"language": "GDScript",
-"path": "res://NEAT_code/neurons.gd"
 }, {
 "base": "Spatial",
 "class": "OrbitArm",
@@ -194,11 +149,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/qodot/game_definitions/worldspawn_layers/liquid/slime.gd"
 }, {
-"base": "Reference",
-"class": "Species",
-"language": "GDScript",
-"path": "res://NEAT_code/species.gd"
-}, {
 "base": "Resource",
 "class": "TrenchBroomFaceAttrib",
 "language": "GDScript",
@@ -225,18 +175,9 @@ _global_script_classes=[ {
 "path": "res://addons/qodot/game_definitions/worldspawn_layers/liquid/water.gd"
 } ]
 _global_script_class_icons={
-"Agent": "",
-"BHOP_AI": "",
 "BHOP_BODY": "",
-"GeneticAlgorithm": "",
-"Genome": "",
-"Highlighter": "",
 "LavaLayer": "",
-"Link": "",
 "LiquidLayer": "",
-"NeatGUI": "",
-"NeuralNet": "",
-"Neuron": "",
 "OrbitArm": "",
 "PhysicsBall": "",
 "PhysicsEntity": "",
@@ -262,7 +203,6 @@ _global_script_class_icons={
 "QuakeWadFile": "",
 "QuakeWadImportPlugin": "",
 "SlimeLayer": "",
-"Species": "",
 "TrenchBroomFaceAttrib": "",
 "TrenchBroomGameConfigFile": "",
 "TrenchBroomGameConfigFolder": "",
@@ -278,11 +218,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
-AI="*res://AI.py"
 Lines3D="*res://3D_Lines.gd"
-Innovations="*res://NEAT_code/innovations.gd"
-Params="*res://NEAT_code/params.gd"
-Utils="*res://NEAT_code/utils.gd"
 
 [display]
 

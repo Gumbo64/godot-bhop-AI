@@ -88,7 +88,7 @@ func _input(event):
 		
 var cam_accel =  100
 var changespeed = true
-onready var mainnode = get_node("/root/Main/BHOP")
+onready var mainnode = get_node("/root/Main/BHOP_CURRENT")
 func _process(delta):
 	if Input.is_action_pressed("mousetoggle"):
 		if mousetoggle:
@@ -124,12 +124,17 @@ onready var anim_player = $AnimationPlayer
 onready var raycast = $Head/Camera/RayCast
 var damage = 10
 onready var bodynode = preload("res://BHOP_SCENE.tscn")
+onready var FP = get_node("/root/Main/GoalPoint")
+
+
 func fire():
-#	if Input.is_action_just_pressed("fire"):
-#
+	if Input.is_action_just_pressed("fire"):
+
 #		var body = bodynode.instance()
 #		body.global_transform.origin = Vector3(0,150,0)
-#		get_node("/root/Spatial/").add_child(body)
+		if raycast.is_colliding():
+			get_node("/root/Main/GoalPoint").global_transform.origin = raycast.get_collision_point()
+			mainnode.rewardtrackers['startpoint']=((mainnode.spawnpos - FP.global_transform.origin)*Vector3(1,0,1)).length()
 #		anim_player.play("AssaultFire")
 	if Input.is_action_just_pressed("rightfire"):
 			if raycast.is_colliding():

@@ -66,6 +66,7 @@ func _ready():
 	#hides the cursor
 	
 	spawnpos = global_transform.origin
+#	spawnpos = get_node("/root/Main/BHOP_CURRENT").spawnpos
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	raycast.add_exception(get_node("/root/Main/Player"))
 	reset()
@@ -89,7 +90,7 @@ func _input(event):
 		
 var cam_accel =  100
 func _process(delta):
-	
+#	rotation = Vector3(0,atan2(playerVelocity.x,playerVelocity.z)+PI,0)
 		#camera physics interpolation to reduce physics jitter on high refresh-rate monitors
 	if Engine.get_frames_per_second() > Engine.iterations_per_second:
 		camera.set_as_toplevel(true)
@@ -135,12 +136,9 @@ var direction
 var velocity
 var dotspeed
 
-
-
-func _physics_process(delta):
+func dophysics():
 	fire()
-	dt +=delta
-
+	var delta = 0.016667
 #	# Movement, here's the important part */
 	
 	QueueJump()
@@ -164,8 +162,9 @@ func _physics_process(delta):
 #	global_transform.origin += playerVelocity * delta
 
 #	print(playerVelocity.y)
-					
-	move_and_slide_with_snap(playerVelocity,snap,Vector3.UP)
+	global_transform.origin += playerVelocity * delta
+	move_and_slide_with_snap(Vector3.ZERO,snap,Vector3.UP)
+#	move_and_slide_with_snap(playerVelocity,snap,Vector3.UP)
 	
 #	var collision = move_and_collide(playerVelocity*delta)
 	for i in range(get_slide_count()):
@@ -193,6 +192,10 @@ func _physics_process(delta):
 
 	if(global_transform.origin[1]<0):
 		reset()
+
+func _physics_process(delta):
+	for i in range(1):
+		dophysics()
 		
 	#Need to move the camera after the player has been moved because otherwise the camera will clip the player if going fast enough and will always be 1 frame behind.
 	# Set the camera's position to the transform

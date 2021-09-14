@@ -43,70 +43,70 @@ shape = SubResource( 3 )
 [node name="Feeler" type="RayCast" parent="Feelers"]
 transform = Transform( 0.984808, -0.173648, -8.74228e-08, -0.173648, -0.984808, 0, -8.60946e-08, 1.51808e-08, -1, 0, -0.256105, 0 )
 enabled = true
-cast_to = Vector3( 50, 0, 0 )
+cast_to = Vector3( 100, 0, 0 )
 
 [node name="Feeler2" type="RayCast" parent="Feelers"]
-transform = Transform( 0.925416, -0.163176, 0.34202, -0.173648, -0.984808, 0, 0.336824, -0.0593912, -0.939693, 0, -0.256105, 0 )
+transform = Transform( 0.925416, -0.163176, -0.34202, -0.173648, -0.984808, 0, -0.336824, 0.0593912, -0.939693, 0, -0.256105, 0 )
 enabled = true
-cast_to = Vector3( 50, 0, 0 )
+cast_to = Vector3( 100, 0, 0 )
 
 [node name="Feeler3" type="RayCast" parent="Feelers"]
-transform = Transform( 0.754406, -0.133022, 0.642787, -0.173648, -0.984808, 0, 0.633022, -0.111619, -0.766045, 0, -0.256105, 0 )
+transform = Transform( 0.754406, -0.133022, -0.642787, -0.173648, -0.984808, 0, -0.633022, 0.111619, -0.766045, 0, -0.256105, 0 )
 enabled = true
-cast_to = Vector3( 50, 0, 0 )
+cast_to = Vector3( 100, 0, 0 )
 
 [node name="Feeler4" type="RayCast" parent="Feelers"]
-transform = Transform( 0.492404, -0.0868242, 0.866025, -0.173648, -0.984808, 0, 0.852869, -0.150384, -0.5, -0.00250816, -0.226174, 0.0254004 )
+transform = Transform( 0.492404, -0.0868242, -0.866025, -0.173648, -0.984808, 0, -0.852869, 0.150384, -0.5, -0.00250816, -0.226174, 0.0254004 )
 enabled = true
-cast_to = Vector3( 50, 0, 0 )
+cast_to = Vector3( 100, 0, 0 )
 
 [node name="Feeler5" type="RayCast" parent="Feelers"]
-transform = Transform( 0.17101, -0.0301537, 0.984808, -0.173648, -0.984808, 0, 0.969847, -0.17101, -0.173648, 0, -0.256105, 0 )
+transform = Transform( 0.17101, -0.0301537, -0.984808, -0.173648, -0.984808, 0, -0.969847, 0.17101, -0.173648, 0, -0.256105, 0 )
 enabled = true
-cast_to = Vector3( 50, 0, 0 )
+cast_to = Vector3( 100, 0, 0 )
 
 [node name="Feeler6" type="RayCast" parent="Feelers"]
-transform = Transform( -0.17101, 0.0301537, 0.984808, -0.173648, -0.984808, 0, 0.969847, -0.17101, 0.173648, 0, -0.256105, 0 )
+transform = Transform( -0.17101, 0.0301537, -0.984808, -0.173648, -0.984808, 0, -0.969847, 0.17101, 0.173648, 0, -0.256105, 0 )
 enabled = true
-cast_to = Vector3( 50, 0, 0 )
+cast_to = Vector3( 100, 0, 0 )
 
 [node name="Feeler7" type="RayCast" parent="Feelers"]
-transform = Transform( -0.492404, 0.0868242, 0.866026, -0.173648, -0.984808, 0, 0.852868, -0.150384, 0.5, 0, -0.256105, 0 )
+transform = Transform( -0.492404, 0.0868242, -0.866026, -0.173648, -0.984808, 0, -0.852868, 0.150384, 0.5, 0, -0.256105, 0 )
 enabled = true
-cast_to = Vector3( 50, 0, 0 )
+cast_to = Vector3( 100, 0, 0 )
 
 [node name="Feeler8" type="RayCast" parent="Feelers"]
-transform = Transform( -0.754406, 0.133022, 0.642788, -0.173648, -0.984808, 0, 0.633022, -0.111619, 0.766044, 0, -0.256105, 0 )
+transform = Transform( -0.754406, 0.133022, -0.642788, -0.173648, -0.984808, 0, -0.633022, 0.111619, 0.766044, 0, -0.256105, 0 )
 enabled = true
-cast_to = Vector3( 50, 0, 0 )
+cast_to = Vector3( 100, 0, 0 )
 
 [node name="Feeler9" type="RayCast" parent="Feelers"]
-transform = Transform( -0.925417, 0.163176, 0.34202, -0.173648, -0.984808, 0, 0.336824, -0.0593912, 0.939692, 0, -0.256105, 0 )
+transform = Transform( -0.925417, 0.163176, -0.34202, -0.173648, -0.984808, 0, -0.336824, 0.0593912, 0.939692, 0, -0.256105, 0 )
 enabled = true
-cast_to = Vector3( 50, 0, 0 )
+cast_to = Vector3( 100, 0, 0 )
 
 [node name="Feeler10" type="RayCast" parent="Feelers"]
 transform = Transform( -0.984808, 0.173648, 0, -0.173648, -0.984808, 0, 0, 0, 1, 0, -0.256105, 0 )
 enabled = true
-cast_to = Vector3( 50, 0, 0 )
+cast_to = Vector3( 100, 0, 0 )
 
 [node name="Feeler11" type="RayCast" parent="Feelers"]
-transform = Transform( 1.91069e-15, -4.37114e-08, -1, -1, -4.37114e-08, 0, -4.37114e-08, 1, -4.37114e-08, 0, -2.09637, 0 )
+transform = Transform( 1.91069e-15, -4.37114e-08, 1, -1, -4.37114e-08, 0, 4.37114e-08, -1, -4.37114e-08, 0, -2.09637, 0 )
 enabled = true
-cast_to = Vector3( 50, 0, 0 )
+cast_to = Vector3( 100, 0, 0 )
 
 [node name="Feeler12" type="RayCast" parent="Feelers"]
-transform = Transform( 0.309976, -0.144544, 0.939693, -0.422618, -0.906308, 0, 0.851651, -0.397131, -0.34202, 0, -0.256, 0 )
+transform = Transform( 0.309976, -0.144544, -0.939693, -0.422618, -0.906308, 0, -0.851651, 0.397131, -0.34202, 0, -0.256, 0 )
 enabled = true
-cast_to = Vector3( 50, 0, 0 )
+cast_to = Vector3( 100, 0, 0 )
 
 [node name="Feeler13" type="RayCast" parent="Feelers"]
-transform = Transform( -0.309975, 0.144544, 0.939693, -0.422618, -0.906308, 0, 0.85165, -0.397131, 0.34202, 0, -0.256, 0 )
+transform = Transform( -0.309975, 0.144544, -0.939693, -0.422618, -0.906308, 0, -0.85165, 0.397131, 0.34202, 0, -0.256, 0 )
 enabled = true
-cast_to = Vector3( 50, 0, 0 )
+cast_to = Vector3( 100, 0, 0 )
 
 [node name="Hand" type="Spatial" parent="."]
-transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -0.271, -0.352, 0.899 )
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -0.271, -0.352, -1.34062 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Hand"]
 layers = 8
