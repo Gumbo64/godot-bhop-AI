@@ -3,7 +3,7 @@ extends Spatial
 var cfg ={
 	"n_actions":2,
 	"C_exploration":2,
-	"iterations_per_step":20,
+	"iterations_per_step":200,
 	"multistep":5
 }
 onready var BHOP_CURRENT = get_node("/root/Main/BHOP_CURRENT")
@@ -30,6 +30,8 @@ class monte_node:
 #		n_actions = 2
 		for i in range(2):
 			children[i]=path+[i]
+	func avg_score():
+		return totalreward/visits
 
 
 
@@ -46,7 +48,7 @@ func rollout(path):
 	if t[1]:
 		Q[path].terminal = true
 		return t[0]
-	trailsreset(BHOP_FUTURE.global_transform.origin,"rollout")
+#	trailsreset(BHOP_FUTURE.global_transform.origin,"rollout")
 	while !done:
 		var tmpaction = randi()%cfg['n_actions']
 		for ____i in range(cfg['multistep']):
@@ -55,7 +57,7 @@ func rollout(path):
 			if t[1]:
 				break
 		done= t[1]
-		trails(BHOP_FUTURE.global_transform.origin,"rollout")
+#		trails(BHOP_FUTURE.global_transform.origin,"rollout")
 
 
 	return score
@@ -81,33 +83,6 @@ func backpropagate(reward,path):
 		Q[currentpath].totalreward += reward 
 		Q[currentpath].visits +=1
 
-func multistep(xaction,path):
-
-
-	var done = false
-	var t
-
-	var score=0
-
-#		cfg['multistep']
-#	print([xaction,path])
-
-	t = load_path(path)
-#	if done
-	if t[1]:
-		Q[path].terminal = true
-		return [t[0],true]
-
-
-	for _i in range(cfg['multistep']):
-
-		t = BHOP_FUTURE.step(xaction)
-		score += t[0]
-		done = t[1]
-		if (done):
-			return [score,done]
-
-	return [score,done]
 
 func load_path(path):
 #		reset to root node's position, then work through path
@@ -133,18 +108,24 @@ func best_uct_action(path):
 	var logPvisits = log(Q[path].visits)
 
 #		return action with best UCT value
+	if not Q.has(path+[0]) and not Q.has(path+[1]):
+		best_child = randi()%2
+		new_node(path+[best_child])
+		return best_child
+		
 	for i in range(cfg['n_actions']):
 		var newpath = path+[i]
 		if not Q.has(newpath):
 			new_node(newpath)
 			return i
 
-		var childreward = Q[newpath].totalreward / Q[newpath].visits
-		var childvisits = Q[newpath].visits
-		if uct_with_log(childreward,logPvisits,childvisits,cfg['C_exploration']) > uct_with_log(Q[path+[best_child]].totalreward,logPvisits,Q[path+[best_child]].visits,cfg['C_exploration']):
+		if uct_with_log(Q[newpath].avg_score(),logPvisits,Q[newpath].visits,cfg['C_exploration']) > uct_with_log(Q[path+[best_child]].avg_score(),logPvisits,Q[path+[best_child]].visits,cfg['C_exploration']):
 			best_child=i
 	return best_child
-	
+
+static func uct_with_log(reward,logPvisits,visits,c):
+	return reward + c*sqrt(logPvisits/visits)
+
 func rand_action(path):
 	var i = randi() % 2
 	var newpath = path+[i]
@@ -154,14 +135,13 @@ func rand_action(path):
 
 	return i
 
-static func uct_with_log(reward,logPvisits,visits,c):
-	return reward + c*sqrt(logPvisits/visits)
+
 
 
 func best_action():
 	var action = 0
 	for i in range(cfg['n_actions']):
-		if Q[[i]].totalreward/Q[[i]].visits>Q[[action]].totalreward/Q[[action]].visits:
+		if Q[[i]].visits>Q[[action]].visits:
 			action = i
 	return action
 
@@ -184,7 +164,7 @@ func trailsreset(newpos,caller):
 	
 func trails(newpos,caller):
 	var callerstats = trail_dict[caller]
-	Lines3D.DrawLine(callerstats[0], newpos ,callerstats[1],0.0)
+	Lines3D.DrawLine(callerstats[0] - Vector3(0,2.5,0), newpos - Vector3(0,2.5,0) ,callerstats[1],0.0)
 	trail_dict[caller][0]=newpos
 
 
@@ -201,37 +181,69 @@ func _ready():
 
 
 #
-var foundmove = false
 func _physics_process(_delta):
 #	trailsreset(BHOP_FUTURE.global_transform.origin,"current")
-	if foundmove:
-		Q = {}
-		new_node([])
-		Q[[]].totalreward =1
-		Q[[]].visits =1
-		Q[[]].set_children()
+	Q = {}
+	new_node([])
+	Q[[]].totalreward =1
+	Q[[]].visits =1
+	Q[[]].set_children()
 
-		for i in range(floor(cfg['iterations_per_step'])):
-			var path = traverse()
-			var reward = rollout(path)
-			backpropagate(reward,path)
-		action = best_action()
-	#	print(action)
-	#	action = 1
-		for i in range(cfg['multistep']):
-			var t = BHOP_CURRENT.step(action)
-	#		var reward = t[0]
-	#		var done=t[1]
-			if (t[1]):
-				BHOP_CURRENT.reset()
-				break
-			trails(BHOP_CURRENT.global_transform.origin,"current")
-#		BHOP_CURRENT.printactionrecord()
-#		BHOP_FUTURE.printactionrecord()
-#		print('-----------')
+	for i in range(floor(cfg['iterations_per_step'])):
+		var path = traverse()
+		var reward = rollout(path)
+		backpropagate(reward,path)
+	action = best_action()
+#	print(action)
+#	action = 1
+	for i in range(cfg['multistep']):
+		var t = BHOP_CURRENT.step(action)
+#		var reward = t[0]
+#		var done=t[1]
+		if (t[1]):
+			BHOP_CURRENT.reset()
+			break
+		trails(BHOP_CURRENT.global_transform.origin,"current")
+#	BHOP_CURRENT.printactionrecord()
+#	BHOP_FUTURE.printactionrecord()
+#	print('-----------')
 	
 #	print(traverse())
 
 
+
+
+
+
+
+
+
+#func multistep(xaction,path):
+#
+#
+#	var done = false
+#	var t
+#
+#	var score=0
+#
+##		cfg['multistep']
+##	print([xaction,path])
+#
+#	t = load_path(path)
+##	if done
+#	if t[1]:
+#		Q[path].terminal = true
+#		return [t[0],true]
+#
+#
+#	for _i in range(cfg['multistep']):
+#
+#		t = BHOP_FUTURE.step(xaction)
+#		score += t[0]
+#		done = t[1]
+#		if (done):
+#			return [score,done]
+#
+#	return [score,done]
 
 

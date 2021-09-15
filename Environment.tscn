@@ -16,6 +16,7 @@ script = ExtResource( 4 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.025074, 115.25, 1.03418 )
 
 [node name="BHOP_FUTURE" parent="." instance=ExtResource( 2 )]
+visible = false
 
 [node name="Population" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.279, 117.402, -7.769 )
