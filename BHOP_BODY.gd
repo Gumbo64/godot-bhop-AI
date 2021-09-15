@@ -251,13 +251,17 @@ func distance_reward():
 #func looking_reward():
 #	var sight_score = 0
 #
+var actionrecord = [0,0]
+func printactionrecord():
+	print(actionrecord)
 func step(action):
 	rewardtrackers['stepcount']+=1
 	var s_observation_
 	var finish_reward=0
 	var s_done=false
 	var s_info
-	
+#	actionrecord[action]+=1
+
 	
 #	print([action,(((action-2)/4.0)*2.0)])
 	
@@ -268,16 +272,16 @@ func step(action):
 
 
 	var deltat = 0.016667
-	frameCount +=1
+#	frameCount +=1
 
 #	# Movement, here's the important part */
 
 	if(is_on_floor()):
 		snap = -get_floor_normal()
-		GroundMove(deltat,wishdir)
+		GroundMove(1)
 	else:
 		snap = Vector3.DOWN
-		AirMove(deltat,wishdir)
+		AirMove(1)
 	if is_on_floor():
 		snap = Vector3.ZERO
 	
@@ -332,7 +336,7 @@ func step(action):
 	
 #	finish_reward += looking_reward()
 #	finish_reward += distance_reward()
-	print(finish_reward)
+#	print(finish_reward)
 #	finish_reward = distance_reward()
 
 	return [finish_reward+distance_reward(), s_done]
@@ -430,7 +434,7 @@ func SetMovementDir(xaction):
 var wishdir
 var wishvel
 
-func AirMove(deltat,wishdir):
+func AirMove(deltat):
 
 #	var wishdir = Vector3.ZERO
 	var wishvel  = airAcceleration
@@ -441,7 +445,7 @@ func AirMove(deltat,wishdir):
 
 	
 #	get_global_transform().basis)
-	wishdir = Vector3(cmd.rightMove, 0, cmd.forwardMove)
+	var wishdir = Vector3(cmd.rightMove, 0, cmd.forwardMove)
 	wishdir = wishdir.rotated(Vector3.UP, global_transform.basis.get_euler().y)
 #	wishdir = to_global(wishdir)
 
@@ -472,7 +476,8 @@ func AirMove(deltat,wishdir):
 	# !CPM: Aircontrol
 
 	# Apply gravity
-	playerVelocity.y -= gravity*deltat
+#	playerVelocity.y -= gravity*deltat
+	playerVelocity.y -= 0.4
 	
 
 	# LEGACY MOVEMENT SEE BOTTOM
@@ -492,8 +497,8 @@ func AirControl(wishdir, wishspeed,deltat ):
 	var i  
 
 	# Can't control movement if not moving forward or backward
-	if(abs(cmd.forwardMove) < 0.001 or abs(wishspeed) < 0.001):
-		return;
+#	if(abs(cmd.forwardMove) < 0.001 or abs(wishspeed) < 0.001):
+#		return;
 
 	zspeed = playerVelocity.y
 	playerVelocity.y = 0
@@ -524,7 +529,7 @@ func AirControl(wishdir, wishspeed,deltat ):
 #*
 # * Called every frame when the engine detects that the player is on the ground
 # */
-func GroundMove(deltat,wishdir):
+func GroundMove(deltat):
 #	var wishdir = Vector3.ZERO
 #	var wishvel = Vector3.ZERO
 
@@ -536,7 +541,7 @@ func GroundMove(deltat,wishdir):
 
 #	SetMovementDir()
 
-	wishdir = Vector3(cmd.rightMove, 0, cmd.forwardMove)
+	var wishdir = Vector3(cmd.rightMove, 0, cmd.forwardMove)
 	wishdir = wishdir.rotated(Vector3.UP, global_transform.basis.get_euler().y)
 	wishdir = wishdir.normalized()
 	moveDirectionNorm = wishdir
