@@ -4,7 +4,9 @@ var cfg ={
 	"n_actions":2,
 	"C_exploration":2,
 	"iterations_per_step":200,
-	"multistep":5
+	"multistep":5,
+#	divide by the multistep recommended
+	"timeout":6
 }
 onready var BHOP_CURRENT = get_node("/root/Main/BHOP_CURRENT")
 onready var BHOP_FUTURE = get_node("/root/Main/BHOP_FUTURE")
@@ -18,18 +20,7 @@ class monte_node:
 	var terminal = false
 	var totalreward = 0
 	var visits = 0
-	var children = {}
-	var path=[]
-	func _init(_path):
-		path = _path
-
-	func set_children():
-		if terminal:
-			children = {}
-			return print("NO CHILDREN TO MAKE")
-#		n_actions = 2
-		for i in range(2):
-			children[i]=path+[i]
+	
 	func avg_score():
 		return totalreward/visits
 
@@ -49,7 +40,8 @@ func rollout(path):
 		Q[path].terminal = true
 		return t[0]
 #	trailsreset(BHOP_FUTURE.global_transform.origin,"rollout")
-	while !done:
+	var timeout = 0
+	while !done and timeout < cfg['timeout']:
 		var tmpaction = randi()%cfg['n_actions']
 		for ____i in range(cfg['multistep']):
 			t = BHOP_FUTURE.step(tmpaction)
@@ -58,6 +50,8 @@ func rollout(path):
 				break
 		done= t[1]
 #		trails(BHOP_FUTURE.global_transform.origin,"rollout")
+		timeout+=1
+	
 
 
 	return score
@@ -71,15 +65,15 @@ func traverse():
 #		var i = rand_action(path)
 		path.push_back(i)
 
-	Q[path].set_children()
+#	Q[path].set_children()
 
 	return path
 
 func backpropagate(reward,path):
 	var currentpath = []
 	for i in path:
-		currentpath = Q[currentpath].children[i]
-#		get average
+		currentpath.push_back(i)
+		
 		Q[currentpath].totalreward += reward 
 		Q[currentpath].visits +=1
 
@@ -169,46 +163,88 @@ func trails(newpos,caller):
 
 
 func new_node(newpath):
-	Q[newpath]=monte_node.new(newpath)
+	Q[newpath]=monte_node.new()
+
+
+#after performing an action, calling this recycles the 
+func shift_tree(x):
+#	the path is the index remember
+	var new_Q = {}
+	for path in Q.keys():
+		if path and path[0] == x:
+#			cut out the first action from the path
+			var newpath = path.slice(1,path.size())
+			new_Q[newpath]=Q[path]
+#		otherwise it just doesn't get copied
+	Q = new_Q
+		
+		
 
 var action
 
-#All the paths and their data
-func _ready():
-	randomize()
-	pass
-
-
-
-#
-func _physics_process(_delta):
-#	trailsreset(BHOP_FUTURE.global_transform.origin,"current")
+func reset_tree():
 	Q = {}
 	new_node([])
 	Q[[]].totalreward =1
 	Q[[]].visits =1
-	Q[[]].set_children()
 
-	for i in range(floor(cfg['iterations_per_step'])):
+
+
+
+func iterate(n):
+	for i in range(n):
 		var path = traverse()
 		var reward = rollout(path)
 		backpropagate(reward,path)
-	action = best_action()
-#	print(action)
-#	action = 1
+
+func currentstep(x):
+	var t
 	for i in range(cfg['multistep']):
-		var t = BHOP_CURRENT.step(action)
+		t = BHOP_CURRENT.step(x)
 #		var reward = t[0]
 #		var done=t[1]
+		totalscore += t[0]
 		if (t[1]):
+			if totalscore>highscore:
+				highscore = totalscore
+				print("High score: ",highscore)
 			BHOP_CURRENT.reset()
+			totalscore=0
 			break
 		trails(BHOP_CURRENT.global_transform.origin,"current")
-#	BHOP_CURRENT.printactionrecord()
-#	BHOP_FUTURE.printactionrecord()
-#	print('-----------')
+	return t[1]
+
+
+#All the paths and their data
+func _ready():
+	randomize()
+	reset_tree()
+
+
+
+
+#
+var highscore = -99999999
+var totalscore = 0
+
+var splitcounter = 0
+func _physics_process(_delta):
+#	trailsreset(BHOP_FUTURE.global_transform.origin,"current")
+
 	
-#	print(traverse())
+	iterate(cfg['iterations_per_step'])
+
+
+	action = best_action()
+	var done = currentstep(action)
+#	if it died, reset tree otherwise just shift
+	if !done:
+		shift_tree(action)
+	else:
+		reset_tree()
+	
+	
+	
 
 
 

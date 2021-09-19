@@ -84,7 +84,6 @@ func _ready():
 #	for i in range(20):
 #		raycast.add_exception(get_node("/root/Spatial/Player"))
 #		raycast.add_exception(get_node("/root/Spatial/AI"))
-	reset()
 	score=0
 	done=false
 	reset()
@@ -126,46 +125,6 @@ var action
 
 	
 
-
-func physics_process(delta):
-
-
-#	action = AI.get_action(observation)
-#	action = randi()%4
-	action = 1
-
-#	print(action)
-	var t = step(action)
-
-	
-	
-	observation_ = t[0]
-	reward = t[1]
-	done=t[2]
-	info= t[3]
-	
-	score += reward
-#	print([observation,action,reward,observation_,done])
-#	AI.store_transition(observation,action,reward,observation_,done)
-#	AI.learn()
-#	observation=observation_
-	if done:
-#		AI.died()
-
-		print('Score: '+str(score))
-#		scores.push_back(score)
-#		print(score)
-#		eps_history.push_back(AI.get_epsilon())
-		
-#		avg_score=average(newest(scores,20))
-#		avg_scores.push_back(avg_score)
-		
-		score=0
-		done=false
-		reset()
-#		observation=sense()
-	pass
-		
 
 
 func getRaycastCollisions():
@@ -241,13 +200,21 @@ var rewardtrackers = {
 
 func distance_reward():
 #	only rewards for horizontal distance not vertical since it can't really control that 
-	var distance = ((global_transform.origin - FP.global_transform.origin)*Vector3(1,0,1)).length()
-
+	var difference = global_transform.origin - FP.global_transform.origin
+	var distance = (difference*Vector3(1,0,1)).length()
+#	var vert_distance = global_transform.origin.y
+	
 	var reward = 1-pow(distance/(rewardtrackers['startdistance']+10),0.4)
 	
+#	var vert_reward = 0
+#	if distance <=100:
+#		vert_reward = pow(vert_distance/(200),0.4) * sign(vert_distance)
+	
+#	var backwardspenalty = min(0,distance-rewardtrackers['lastdistance'])
 #	rewardtrackers['lastdistance']=distance
+	
 
-	return reward
+	return reward 
 #func looking_reward():
 #	var sight_score = 0
 #
@@ -289,7 +256,7 @@ func step(action):
 	move_and_slide_with_snap(Vector3.ZERO,snap,Vector3.UP)
 	
 	if(global_transform.origin[1]<0):
-		finish_reward += -100
+		finish_reward += -300
 		s_done = true
 		
 	else:
@@ -298,7 +265,7 @@ func step(action):
 #				finish_reward = 10000
 #				s_done = true
 #				break
-				return [10000, true]
+				return [99999999999, true]
 			elif(get_slide_collision(i).collider.name.left(3) == "Die" ):
 #				finish_reward = -300
 #				s_done = true
@@ -307,9 +274,9 @@ func step(action):
 			else:
 				if((not rewardtrackers['touchedplatforms'].has(get_slide_collision(i).collider.name)) ):
 					rewardtrackers['touchedplatforms'].push_back(get_slide_collision(i).collider.name)
-					finish_reward += 200
-				else:
-					finish_reward -= 2
+					finish_reward += 20
+#				else:
+#					finish_reward -= 2
 		
 				
 
@@ -369,7 +336,6 @@ func get_state():
 	return state
 
 func load_state(s):
-
 	rewardtrackers['stepcount']=s[0]
 	rewardtrackers['touchedplatforms']=s[1]
 	rewardtrackers['lastdistance']=s[2]
@@ -378,6 +344,7 @@ func load_state(s):
 	playerVelocity = s[5]
 	#this move_and_slide_with_snap stops the bot from thinking it's grounded on the first frame if it isn't
 	move_and_slide(Vector3.ZERO)
+	return 
 
 ##******************************************************************************************************\
 #|* MOVEMENT
@@ -389,8 +356,10 @@ func load_state(s):
 
 
 var actionbook = {
-	0:[1,0],
-	1:[-1,0],
+	0:1,
+	1:-1,
+#	0:[1,0],
+#	1:[-1,0],
 	2:[0,1],
 	3:[0,-1],
 	
@@ -406,11 +375,10 @@ func SetMovementDir(xaction):
 #	print(xaction)
 	rotation = Vector3(0,atan2(playerVelocity.x,playerVelocity.z)+PI,0)
 
-	
-	cmd.rightMove = actionbook[xaction][0]
-	cmd.forwardMove = actionbook[xaction][1]
-	
-	rewardtrackers['lastaction']=xaction
+	cmd.rightMove = actionbook[xaction]
+#	cmd.rightMove = actionbook[xaction][0]
+#	cmd.forwardMove = actionbook[xaction][1]
+
 
 
 
@@ -463,11 +431,11 @@ func AirMove(deltat):
 	else:
 		accel = airAcceleration
 	# If the player is ONLY strafing left or right
-	if(cmd.forwardMove == 0 and cmd.rightMove != 0):
+#	if(cmd.forwardMove == 0 and cmd.rightMove != 0):
 	
-		if(wishspeed > sideStrafeSpeed):
-			wishspeed = sideStrafeSpeed
-		accel = sideStrafeAcceleration
+	if(wishspeed > sideStrafeSpeed):
+		wishspeed = sideStrafeSpeed
+	accel = sideStrafeAcceleration
 	
 
 	Accelerate(wishdir, wishspeed, accel,deltat)

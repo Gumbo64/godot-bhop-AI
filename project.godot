@@ -230,7 +230,8 @@ enabled=PoolStringArray( "res://addons/qodot/plugin.cfg" )
 
 [gdnative]
 
-singletons=[ "res://pythonscript.gdnlib" ]
+singletons=[  ]
+singletons_disabled=[  ]
 
 [global]
 
