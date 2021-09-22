@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Noclip.gd" type="Script" id=1]
 [ext_resource path="res://textures/crosshair.png" type="Texture" id=2]
-[ext_resource path="res://debugstats.gd" type="Script" id=3]
+[ext_resource path="res://GUI/Highscore.gd" type="Script" id=3]
 [ext_resource path="res://gunmaterial.tres" type="Material" id=4]
 
 [sub_resource type="CapsuleMesh" id=1]

@@ -1,9 +1,11 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://map.tscn" type="PackedScene" id=1]
 [ext_resource path="res://BHOP_SCENE.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Noclip.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Camera.gd" type="Script" id=3]
 [ext_resource path="res://Main.gd" type="Script" id=4]
+[ext_resource path="res://GUI/Highscore.gd" type="Script" id=5]
+[ext_resource path="res://GUI/Header.tres" type="DynamicFont" id=6]
 
 [sub_resource type="CylinderMesh" id=1]
 top_radius = 0.649
@@ -14,9 +16,12 @@ script = ExtResource( 4 )
 
 [node name="BHOP_CURRENT" parent="." instance=ExtResource( 2 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.025074, 115.25, 1.03418 )
+visible = false
 
 [node name="BHOP_FUTURE" parent="." instance=ExtResource( 2 )]
 visible = false
+
+[node name="BHOP_VISIBLE" parent="." instance=ExtResource( 2 )]
 
 [node name="Population" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.279, 117.402, -7.769 )
@@ -32,5 +37,35 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5.73542, 48.6614, 534.965 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Player" parent="." instance=ExtResource( 3 )]
-transform = Transform( 0.0196684, 0, -0.999807, 0, 1, 0, 0.999807, 0, 0.0196684, -173.285, 158.999, 209.513 )
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -67.7192, 154.347, -4.06315 )
+fov = 90.0
+size = 0.1
+near = 0.01
+far = 8192.0
+script = ExtResource( 3 )
+
+[node name="Panel" type="Panel" parent="Camera"]
+anchor_right = 0.28
+anchor_bottom = 0.345
+margin_left = -1.0
+margin_top = -1.0
+margin_right = -36.8
+margin_bottom = -106.8
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Highscore" type="RichTextLabel" parent="Camera/Panel"]
+anchor_right = 3.578
+anchor_bottom = 2.914
+margin_left = 26.8811
+margin_top = 26.0
+margin_right = -1855.74
+margin_bottom = -1046.37
+custom_fonts/normal_font = ExtResource( 6 )
+text = "Highscore: "
+script = ExtResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}

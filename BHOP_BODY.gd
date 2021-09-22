@@ -79,7 +79,7 @@ func _ready():
 	rewardtrackers['lastdistance']=rewardtrackers['startdistance']
 	#hides the cursor
 #	spawnpos = global_transform.origin
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
 	
 #	for i in range(20):
 #		raycast.add_exception(get_node("/root/Spatial/Player"))
@@ -256,8 +256,9 @@ func step(action):
 	move_and_slide_with_snap(Vector3.ZERO,snap,Vector3.UP)
 	
 	if(global_transform.origin[1]<0):
-		finish_reward += -300
-		s_done = true
+#		finish_reward += -300
+#		s_done = true
+		return [-300, true]
 		
 	else:
 		for i in range(get_slide_count()):
