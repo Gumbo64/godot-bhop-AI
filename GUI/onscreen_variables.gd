@@ -9,8 +9,15 @@ extends RichTextLabel
 onready var main = get_node("/root/Main/")
 
 # Called when the node enters the scene tree for the first time.
+
+var onscreen_variables = ["highscore","iterations","deaths","steps"]
+
+
 func _process(delta):
-	set_text("Highscore: "+str(main.highscore)+"\n")
+	var totaltext = ""
+	for i in onscreen_variables:
+		totaltext += i + ": " + str(main[i]) + "\n"
+	set_text(totaltext)
 	pass # Replace with function body.
 
 

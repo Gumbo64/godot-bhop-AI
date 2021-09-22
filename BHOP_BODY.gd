@@ -75,8 +75,8 @@ func _ready():
 #	Engine.set_time_scale(timespeed)
 	spawnpos = global_transform.origin
 	spawnpos = get_node("/root/Main/BHOP_CURRENT").spawnpos
-	rewardtrackers['startdistance']=((global_transform.origin - FP.global_transform.origin)*Vector3(1,0,1)).length()
-	rewardtrackers['lastdistance']=rewardtrackers['startdistance']
+	cfg['BHOP_startdistance']=((global_transform.origin - FP.global_transform.origin)*Vector3(1,0,1)).length()
+	cfg['BHOP_lastdistance']=cfg['BHOP_startdistance']
 	#hides the cursor
 #	spawnpos = global_transform.origin
 
@@ -204,7 +204,7 @@ func distance_reward():
 	var distance = (difference*Vector3(1,0,1)).length()
 #	var vert_distance = global_transform.origin.y
 	
-	var reward = 1-pow(distance/(rewardtrackers['startdistance']+10),0.4)
+	var reward = 1-pow(distance/(cfg['BHOP_startdistance']+10),0.4)
 	
 #	var vert_reward = 0
 #	if distance <=100:
@@ -256,9 +256,9 @@ func step(action):
 	move_and_slide_with_snap(Vector3.ZERO,snap,Vector3.UP)
 	
 	if(global_transform.origin[1]<0):
-#		finish_reward += -300
+#		finish_reward += -30
 #		s_done = true
-		return [-300, true]
+		return [-30, true]
 		
 	else:
 		for i in range(get_slide_count()):
@@ -268,9 +268,9 @@ func step(action):
 #				break
 				return [99999999999, true]
 			elif(get_slide_collision(i).collider.name.left(3) == "Die" ):
-#				finish_reward = -300
+#				finish_reward = -30
 #				s_done = true
-				return [-300, true]
+				return [-30, true]
 #				break
 			else:
 				if((not rewardtrackers['touchedplatforms'].has(get_slide_collision(i).collider.name)) ):
@@ -318,7 +318,7 @@ func reset():
 
 	rewardtrackers['stepcount']=0
 	rewardtrackers['touchedplatforms']=['plat1']
-	rewardtrackers['lastdistance']=rewardtrackers['startdistance']
+	rewardtrackers['lastdistance']=cfg['BHOP_startdistance']
 	global_transform.origin = spawnpos
 	rotation = Vector3(0,PI,0)
 	playerVelocity = Vector3(0,0,20)

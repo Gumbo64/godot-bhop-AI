@@ -4,7 +4,7 @@
 [ext_resource path="res://BHOP_SCENE.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Camera.gd" type="Script" id=3]
 [ext_resource path="res://Main.gd" type="Script" id=4]
-[ext_resource path="res://GUI/Highscore.gd" type="Script" id=5]
+[ext_resource path="res://GUI/onscreen_variables.gd" type="Script" id=5]
 [ext_resource path="res://GUI/Header.tres" type="DynamicFont" id=6]
 
 [sub_resource type="CylinderMesh" id=1]
@@ -23,10 +23,6 @@ visible = false
 
 [node name="BHOP_VISIBLE" parent="." instance=ExtResource( 2 )]
 
-[node name="Population" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.279, 117.402, -7.769 )
-visible = false
-
 [node name="Map" parent="." instance=ExtResource( 1 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 111.28, 0 )
 
@@ -37,15 +33,22 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5.73542, 48.6614, 534.965 )
 mesh = SubResource( 1 )
 material/0 = null
 
-[node name="Camera" type="Camera" parent="."]
+[node name="Noclip" type="Spatial" parent="."]
+
+[node name="Camera" type="Camera" parent="Noclip"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -67.7192, 154.347, -4.06315 )
+current = true
 fov = 90.0
 size = 0.1
 near = 0.01
 far = 8192.0
 script = ExtResource( 3 )
 
-[node name="Panel" type="Panel" parent="Camera"]
+[node name="RayCast" type="RayCast" parent="Noclip/Camera"]
+enabled = true
+cast_to = Vector3( 0, 0, -2000 )
+
+[node name="Panel" type="Panel" parent="Noclip/Camera"]
 anchor_right = 0.28
 anchor_bottom = 0.345
 margin_left = -1.0
@@ -56,13 +59,13 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Highscore" type="RichTextLabel" parent="Camera/Panel"]
+[node name="Highscore" type="RichTextLabel" parent="Noclip/Camera/Panel"]
 anchor_right = 3.578
 anchor_bottom = 2.914
-margin_left = 26.8811
+margin_left = 27.0
 margin_top = 26.0
-margin_right = -1855.74
-margin_bottom = -1046.37
+margin_right = -1796.62
+margin_bottom = -781.374
 custom_fonts/normal_font = ExtResource( 6 )
 text = "Highscore: "
 script = ExtResource( 5 )

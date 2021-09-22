@@ -30,7 +30,7 @@ class monte_node(ABC):
 	
 	def find_children(self):
 		"All possible successors of this board state"
-		if board.terminal:  # If the game is finished then no moves can be made
+		if board.terminal  # If the game is finished then no moves can be made
 			return set()
 		# Otherwise, you can make a move in each of the empty spots
 		return {
