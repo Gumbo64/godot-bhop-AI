@@ -1,3 +1,0 @@
-# fps-godot
-
-fps game

@@ -273,11 +273,12 @@ func step(action):
 				return [-30, true]
 #				break
 			else:
-				if((not rewardtrackers['touchedplatforms'].has(get_slide_collision(i).collider.name)) ):
-					rewardtrackers['touchedplatforms'].push_back(get_slide_collision(i).collider.name)
-					finish_reward += 20
+#				if((not rewardtrackers['touchedplatforms'].has(get_slide_collision(i).collider.name)) ):
+#					rewardtrackers['touchedplatforms'].push_back(get_slide_collision(i).collider.name)
+#					finish_reward += 20
 #				else:
 #					finish_reward -= 2
+				pass
 		
 				
 

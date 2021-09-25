@@ -217,11 +217,11 @@ func reset_tree():
 	Q[[]].totalreward =1
 	Q[[]].visits =1
 
-var CAMERAreset = true
+
 func reset_game():
 	reset_tree()
 	BHOP_CURRENT.reset()
-	CAMERAreset=true
+
 
 	totalscore=0
 	iterate(cfg['iterations_per_step'])
@@ -250,9 +250,6 @@ func _physics_process(_delta):
 #	trailsreset(BHOP_FUTURE.global_transform.origin,"current")
 	iterate(ceil(cfg['iterations_per_step']/cfg['multistep']))
 	if new_move_split():
-		if CAMERAreset:
-			CAMERAreset=false
-			
 		BHOP_VISIBLE.load_state(BHOP_CURRENT.get_state())
 		action = best_action([])
 		var done = currentstep(action)
@@ -269,7 +266,7 @@ func _physics_process(_delta):
 	steps+=1
 	if BHOP_VISIBLE.step(action)[1]:
 		BHOP_VISIBLE.load_state(BHOP_CURRENT.get_state())
-#		CAMERA.reset()
+		CAMERA.reset()
 		steps=0
 		
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://map.tscn" type="PackedScene" id=1]
 [ext_resource path="res://BHOP_SCENE.tscn" type="PackedScene" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://Main.gd" type="Script" id=4]
 [ext_resource path="res://GUI/onscreen_variables.gd" type="Script" id=5]
 [ext_resource path="res://GUI/Header.tres" type="DynamicFont" id=6]
+[ext_resource path="res://Freecam.gd" type="Script" id=7]
 
 [sub_resource type="CylinderMesh" id=1]
 top_radius = 0.649
@@ -15,7 +16,7 @@ bottom_radius = 1.497
 script = ExtResource( 4 )
 
 [node name="BHOP_CURRENT" parent="." instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.025074, 115.25, 1.03418 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.025, 115.25, 1.034 )
 visible = false
 
 [node name="BHOP_FUTURE" parent="." instance=ExtResource( 2 )]
@@ -60,6 +61,43 @@ __meta__ = {
 }
 
 [node name="Highscore" type="RichTextLabel" parent="Noclip/Camera/Panel"]
+anchor_right = 3.578
+anchor_bottom = 2.914
+margin_left = 27.0
+margin_top = 26.0
+margin_right = -1796.62
+margin_bottom = -781.374
+custom_fonts/normal_font = ExtResource( 6 )
+text = "Highscore: "
+script = ExtResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Freecam" type="Spatial" parent="."]
+script = ExtResource( 7 )
+
+[node name="Head" type="Spatial" parent="Freecam"]
+
+[node name="Camera" type="Camera" parent="Freecam/Head"]
+fov = 90.0
+near = 0.01
+far = 8192.0
+
+[node name="RayCast" type="RayCast" parent="Freecam/Head/Camera"]
+
+[node name="Panel" type="Panel" parent="Freecam/Head/Camera"]
+anchor_right = 0.28
+anchor_bottom = 0.345
+margin_left = -1.0
+margin_top = -1.0
+margin_right = -36.8
+margin_bottom = -106.8
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Highscore" type="RichTextLabel" parent="Freecam/Head/Camera/Panel"]
 anchor_right = 3.578
 anchor_bottom = 2.914
 margin_left = 27.0

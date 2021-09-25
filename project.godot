@@ -244,6 +244,7 @@ singletons_disabled=[  ]
 
 colo=false
 full=false
+ect=false
 
 [input]
 
