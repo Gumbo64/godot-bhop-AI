@@ -89,37 +89,35 @@ func _input(event):
 		
 		
 var cam_accel =  100
-func _process(delta):
-#	rotation = Vector3(0,atan2(playerVelocity.x,playerVelocity.z)+PI,0)
-		#camera physics interpolation to reduce physics jitter on high refresh-rate monitors
-	if Engine.get_frames_per_second() > Engine.iterations_per_second:
-		camera.set_as_toplevel(true)
-		camera.global_transform.origin = camera.global_transform.origin.linear_interpolate(head.global_transform.origin, cam_accel * delta)
-		camera.rotation.y = rotation.y
-		camera.rotation.x = head.rotation.x
-	else:
-		camera.set_as_toplevel(false)
-		camera.global_transform = head.global_transform
-		
+#func _process(delta):
+##	rotation = Vector3(0,atan2(playerVelocity.x,playerVelocity.z)+PI,0)
+#		#camera physics interpolation to reduce physics jitter on high refresh-rate monitors
+#	if Engine.get_frames_per_second() > Engine.iterations_per_second:
+#		camera.set_as_toplevel(true)
+#		camera.global_transform.origin = camera.global_transform.origin.linear_interpolate(head.global_transform.origin, cam_accel * delta)
+#		camera.rotation.y = rotation.y
+#		camera.rotation.x = head.rotation.x
+#	else:
+#		camera.set_as_toplevel(false)
+#		camera.global_transform = head.global_transform
+#
 onready var b_decal = preload("res://BulletDecal.tscn")
 onready var anim_player = $AnimationPlayer
 onready var raycast = $Head/Camera/RayCast
 var damage = 10
+
+onready var mainnode = get_node("/root/Main/")
+onready var BHOP_CURRENT = get_node("/root/Main/BHOP_CURRENT")
+onready var FP = get_node("/root/Main/GoalPoint")
 func fire():
 	if Input.is_action_just_pressed("fire"):
-		if not anim_player.is_playing():
-#			camera.translation = lerp(camera.translation, 
-#					Vector3(rand_range(MAX_CAM_SHAKE, -MAX_CAM_SHAKE), 
-#					rand_range(MAX_CAM_SHAKE, -MAX_CAM_SHAKE), 0), 0.5)
-			if raycast.is_colliding():
-				var target = raycast.get_collider()
-				if target.is_in_group("Enemy"):
-					target.health -= damage
-				var b = b_decal.instance()
-				raycast.get_collider().add_child(b)
-				b.global_transform.origin = raycast.get_collision_point()
-				b.look_at(raycast.get_collision_point() + (raycast.get_collision_normal().cross(Vector3(0,1,0)) + raycast.get_collision_normal()*Vector3.UP).normalized(), Vector3.UP)
-#				global_transform.origin = raycast.get_collision_point() + Vector3(0,10,0)
+#		var body = bodynode.instance()
+#		body.global_transform.origin = Vector3(0,150,0)
+		if raycast.is_colliding():
+			get_node("/root/Main/GoalPoint").global_transform.origin = raycast.get_collision_point()
+			BHOP_CURRENT.nav_index=0
+			cfg['startstate']= BHOP_CURRENT.get_state()
+			mainnode.reset_logic()
 #		anim_player.play("AssaultFire")
 	if Input.is_action_just_pressed("rightfire"):
 			if raycast.is_colliding():
@@ -194,7 +192,7 @@ func dophysics():
 		reset()
 
 func _physics_process(delta):
-	for i in range(1):
+	if cfg['camera_selected'] == "playable": 
 		dophysics()
 		
 	#Need to move the camera after the player has been moved because otherwise the camera will clip the player if going fast enough and will always be 1 frame behind.
@@ -205,7 +203,7 @@ func _physics_process(delta):
 
 func reset():
 	global_transform.origin = spawnpos
-	rotation = Vector3(0,PI,0)
+	rotation = Vector3.ZERO
 	camera.rotation=Vector3.ZERO
 	head.rotation=Vector3.ZERO
 	playerVelocity = Vector3(0,0,20)

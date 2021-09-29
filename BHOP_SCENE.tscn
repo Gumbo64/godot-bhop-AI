@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://BHOP_BODY.gd" type="Script" id=1]
 [ext_resource path="res://gunmaterial.tres" type="Material" id=4]
@@ -11,12 +11,6 @@ mid_height = 3.0
 height = 3.0
 
 [sub_resource type="CylinderShape" id=3]
-
-[sub_resource type="CubeMesh" id=4]
-size = Vector3( 0.1, 0.2, 1.5 )
-
-[sub_resource type="SpatialMaterial" id=5]
-albedo_color = Color( 1, 0.0470588, 0.0470588, 1 )
 
 [node name="Player" type="KinematicBody"]
 collision_layer = 2
@@ -104,11 +98,3 @@ cast_to = Vector3( 100, 0, 0 )
 transform = Transform( -0.309975, 0.144544, -0.939693, -0.422618, -0.906308, 0, -0.85165, 0.397131, 0.34202, 0, -0.256, 0 )
 enabled = true
 cast_to = Vector3( 100, 0, 0 )
-
-[node name="Hand" type="Spatial" parent="."]
-transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -0.271, -0.352, -1.34062 )
-
-[node name="MeshInstance" type="MeshInstance" parent="Hand"]
-layers = 8
-mesh = SubResource( 4 )
-material/0 = SubResource( 5 )

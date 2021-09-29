@@ -61,7 +61,6 @@ var cmd =  {
 	"rightMove": 0,
 	"forwardMove":0
 }
-var spawnpos
 
 
 
@@ -71,14 +70,15 @@ var spawnpos
 #var AI = load("res://AI.py").new()
 
 #var timespeed = 100
+
+
+
+
 func _ready():
 #	Engine.set_time_scale(timespeed)
-	spawnpos = global_transform.origin
-	spawnpos = get_node("/root/Main/BHOP_CURRENT").spawnpos
-	cfg['BHOP_startdistance']=((global_transform.origin - FP.global_transform.origin)*Vector3(1,0,1)).length()
-	cfg['BHOP_lastdistance']=cfg['BHOP_startdistance']
+	
 	#hides the cursor
-#	spawnpos = global_transform.origin
+#	cfg['spawnpos'] = global_transform.origin
 
 	
 #	for i in range(20):
@@ -105,7 +105,6 @@ var snap
 var direction
 var velocity
 var dotspeed
-var wishjump = true
 
 
 
@@ -122,6 +121,7 @@ var info
 var avg_score
 var action 
 
+var lastlocation = Vector3.ZERO
 
 	
 
@@ -189,26 +189,44 @@ func sense():
 	return sensearray
 
 
+#
+#var rewardtrackers = {
+#	'lastdistance': 0,
+#	'lastaction':0,
+#	'startdistance':0,
+#	'touchedplatforms':['plat1'],
+#	'stepcount':0
+#}
 
-var rewardtrackers = {
-	'lastdistance': 0,
-	'lastaction':0,
-	'startdistance':0,
-	'touchedplatforms':['plat1'],
-	'stepcount':0
-}
+
+
+
+var nav_index = 0
+
+
+func navpath_distance_to_end():
+	return cfg['navpath_distances_to_end'][nav_index] + (global_transform.origin-cfg['navpath'][nav_index]).length() 
+
 
 func distance_reward():
-#	only rewards for horizontal distance not vertical since it can't really control that 
-	var difference = global_transform.origin - FP.global_transform.origin
-	var distance = (difference*Vector3(1,0,1)).length()
-#	var vert_distance = global_transform.origin.y
-	
-	var reward = 1-pow(distance/(cfg['BHOP_startdistance']+10),0.4)
+##	only rewards for horizontal distance not vertical since it can't really control that 
+
+#	var distance = difference.length()
+##	var vert_distance = global_transform.origin.y
+
+	var reward
+	if nav_index >= cfg['navpath'].size():
+		var difference = global_transform.origin - FP.global_transform.origin
+		var distance = difference.length()
+		reward = 1-pow(distance/(cfg['navpath_distances_to_end'][0]+10),0.4)
+		
+	else:
+		reward = 1-pow(navpath_distance_to_end()/(cfg['navpath_distances_to_end'][0]+10),0.4)
+		if(global_transform.origin-cfg['navpath'][nav_index]).length() <=cfg['nav_index_min_range'] and global_transform.origin.y > cfg['navpath'][nav_index].y :
+			nav_index += 1
 	
 #	var vert_reward = 0
-#	if distance <=100:
-#		vert_reward = pow(vert_distance/(200),0.4) * sign(vert_distance)
+	
 	
 #	var backwardspenalty = min(0,distance-rewardtrackers['lastdistance'])
 #	rewardtrackers['lastdistance']=distance
@@ -221,18 +239,28 @@ func distance_reward():
 var actionrecord = [0,0]
 func printactionrecord():
 	print(actionrecord)
+	
 func step(action):
-	rewardtrackers['stepcount']+=1
+	var lastpos = global_transform.origin
 	var s_observation_
 	var finish_reward=0
 	var s_done=false
 	var s_info
+	
+	wishJump = true
+	var difference = global_transform.origin - FP.global_transform.origin
+	var distance = difference.length()
+	if distance < cfg['stop_movement_distance'] and global_transform.origin.y >= FP.global_transform.origin.y and nav_index >= cfg['navpath'].size():
+		wishJump=false
+		finish_reward += 100
+	
+	
 #	actionrecord[action]+=1
 
 	
 #	print([action,(((action-2)/4.0)*2.0)])
 	
-#	action is [0] instead of just 0 for some reason so im doing this
+
 
 	SetMovementDir(action)
 	
@@ -258,26 +286,29 @@ func step(action):
 	if(global_transform.origin[1]<0):
 #		finish_reward += -30
 #		s_done = true
-		return [-30, true]
+		return [-300, true]
 		
 	else:
-		for i in range(get_slide_count()):
-			if (get_slide_collision(i).collider.name.left(6) == "Finish"  ):
-#				finish_reward = 10000
-#				s_done = true
-#				break
-				return [99999999999, true]
-			elif(get_slide_collision(i).collider.name.left(3) == "Die" ):
-#				finish_reward = -30
-#				s_done = true
-				return [-30, true]
-#				break
-			else:
-				if((not rewardtrackers['touchedplatforms'].has(get_slide_collision(i).collider.name)) ):
-					rewardtrackers['touchedplatforms'].push_back(get_slide_collision(i).collider.name)
-					finish_reward += 20
-#				else:
-#					finish_reward -= 2
+		pass
+		finish_reward -= 0.1 * get_slide_count()
+#		for i in range(get_slide_count()):
+#			finish_reward -= 0.1
+#			if (get_slide_collision(i).collider.name.left(6) == "Finish"  ):
+##				finish_reward = 10000
+##				s_done = true
+##				break
+#				return [99999999999, true]
+#			elif(get_slide_collision(i).collider.name.left(3) == "Die" ):
+##				finish_reward = -30
+##				s_done = true
+#				return [-300, true]
+##				break
+#			else:
+#				if((not rewardtrackers['touchedplatforms'].has(get_slide_collision(i).collider.name)) ):
+#					rewardtrackers['touchedplatforms'].push_back(get_slide_collision(i).collider.name)
+#					finish_reward += 20
+##				else:
+##					finish_reward -= 2
 		
 				
 
@@ -307,7 +338,13 @@ func step(action):
 #	print(finish_reward)
 #	finish_reward = distance_reward()
 
-	return [finish_reward+distance_reward(), s_done]
+#	print(((lastpos - global_transform.origin).abs()*Vector3(1,0,1)).length())
+	
+#	if ((lastpos - global_transform.origin).abs()*Vector3(1,0,1)).length()<cfg['minmovement']:
+#		return [-300,true]
+		
+
+	return [finish_reward + distance_reward(), s_done]
 	
 	
 
@@ -316,33 +353,34 @@ func step(action):
 
 func reset():
 
-	rewardtrackers['stepcount']=0
-	rewardtrackers['touchedplatforms']=['plat1']
-	rewardtrackers['lastdistance']=cfg['BHOP_startdistance']
-	global_transform.origin = spawnpos
-	rotation = Vector3(0,PI,0)
-	playerVelocity = Vector3(0,0,20)
+#	rewardtrackers['stepcount']=0
+#	rewardtrackers['touchedplatforms']=['plat1']
+#	rewardtrackers['lastdistance']=cfg['BHOP_startdistance']
+	load_state(cfg['startstate'])
 	#this move_and_slide_with_snap stops the bot from thinking it's grounded on the first frame if it isn't
 	move_and_slide(Vector3.ZERO)
 
 	
 func get_state():
 	var state = []
-	state.push_back(rewardtrackers['stepcount'])
-	state.push_back(rewardtrackers['touchedplatforms'])
-	state.push_back(rewardtrackers['lastdistance'])
+#	state.push_back(rewardtrackers['stepcount'])
+#	state.push_back(rewardtrackers['touchedplatforms'])
+#	state.push_back(rewardtrackers['lastdistance'])
 	state.push_back(global_transform.origin)
 	state.push_back(rotation)
 	state.push_back(playerVelocity)
+	state.push_back(nav_index)
 	return state
 
 func load_state(s):
-	rewardtrackers['stepcount']=s[0]
-	rewardtrackers['touchedplatforms']=s[1]
-	rewardtrackers['lastdistance']=s[2]
-	global_transform.origin = s[3]
-	rotation = s[4]
-	playerVelocity = s[5]
+#	print(s)
+#	rewardtrackers['stepcount']=s[0]
+#	rewardtrackers['touchedplatforms']=s[1]
+#	rewardtrackers['lastdistance']=s[2]
+	global_transform.origin = s[0]
+	rotation = s[1]
+	playerVelocity = s[2]
+	nav_index = s[3]
 	#this move_and_slide_with_snap stops the bot from thinking it's grounded on the first frame if it isn't
 	move_and_slide(Vector3.ZERO)
 	return 
@@ -446,7 +484,7 @@ func AirMove(deltat):
 
 	# Apply gravity
 #	playerVelocity.y -= gravity*deltat
-	playerVelocity.y -= 0.4
+	playerVelocity.y -= 0.33334
 	
 
 	# LEGACY MOVEMENT SEE BOTTOM
@@ -503,10 +541,10 @@ func GroundMove(deltat):
 #	var wishvel = Vector3.ZERO
 
 	# Do not apply friction if the player is queueing up the next jump
-#	if(!wishJump):
-#		ApplyFriction(1.0,deltat)
-#	else:
-	ApplyFriction(0,deltat)
+	if(!wishJump):
+		ApplyFriction(1.0,deltat)
+	else:
+		ApplyFriction(0,deltat)
 
 #	SetMovementDir()
 
@@ -523,9 +561,8 @@ func GroundMove(deltat):
 	# Reset the gravity velocity
 	playerVelocity.y = 0
 	
-#	if(wishJump):
-
-	playerVelocity.y =  jumpSpeed
+	if(wishJump):
+		playerVelocity.y =  jumpSpeed
 	# only apply if it would make you go faster because going slower up a ramp is lame
 	if ((playerVelocity+ get_floor_normal()*Vector3(1,0,1) * jumpSpeed).length() > playerVelocity.length() ):
 		playerVelocity += get_floor_normal()*Vector3(1,0,1) * jumpSpeed

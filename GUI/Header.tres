@@ -5,5 +5,5 @@ antialiased = false
 font_path = "res://GUI/Roboto/Roboto-Regular.ttf"
 
 [resource]
-size = 50
+size = 40
 font_data = SubResource( 1 )

@@ -5,6 +5,11 @@ onready var CAMERA = get_node("/root/Main/Noclip/Camera")
 onready var BHOP_CURRENT = get_node("/root/Main/BHOP_CURRENT")
 onready var BHOP_FUTURE = get_node("/root/Main/BHOP_FUTURE")
 onready var BHOP_VISIBLE = get_node("/root/Main/BHOP_VISIBLE")
+onready var FP = get_node("/root/Main/GoalPoint")
+
+onready var nav = get_node("/root/Main/Navigation")
+onready var nav_index_visualiser = get_node("/root/Main/nav_index_visualiser")
+
 var Q = {}
 
 
@@ -15,6 +20,7 @@ class monte_node:
 	var terminal = false
 	var totalreward = 0
 	var visits = 0
+	var state
 	
 	func avg_score():
 		return totalreward/visits
@@ -24,9 +30,12 @@ class monte_node:
 func rollout(path):
 	
 	if Q[path].terminal:
-		return Q[path].totalscore/Q[path].visits
+		return Q[path].totalreward/Q[path].visits
+	
+#	print(path)
 	var t = load_path(path)
-	if t[1] or path_timeout_check(path,0):
+	#	if t[1] or path_timeout_check(path,0):
+	if t[1] or (path_timeout_check(path,0) and cfg['timeouts']):
 		Q[path].terminal = true
 		return t[0]
 #	load_state(state)
@@ -47,7 +56,7 @@ func rollout(path):
 				break
 #		trails(BHOP_FUTURE.global_transform.origin,"rollout")
 		rollout_timeout+=1
-		done= t[1] or path_timeout_check(path,rollout_timeout)
+		done= t[1] or (path_timeout_check(path,0) and cfg['timeouts'])
 	
 
 
@@ -57,7 +66,7 @@ func rollout(path):
 func traverse():
 	var path = []
 #		will reach a node that hasn't been rollouted yet / has no visits / not created yet (those all mean the same thing btw)
-	while Q[path].visits != 0:
+	while Q[path].visits != 0 and !Q[path].terminal:
 		var i = best_uct_action(path)
 #		var i = rand_action(path)
 		path.push_back(i)
@@ -70,6 +79,7 @@ func backpropagate(reward,path):
 	var currentpath = []
 	for i in path:
 		currentpath.push_back(i)
+#		print(Q[currentpath].state)
 		
 		Q[currentpath].totalreward += reward 
 		Q[currentpath].visits +=1
@@ -77,18 +87,50 @@ func backpropagate(reward,path):
 
 func load_path(path):
 #		reset to root node's position, then work through path
-
-	BHOP_FUTURE.load_state(BHOP_CURRENT.get_state())
 	var t = [0,false]
-	trailsreset(BHOP_FUTURE.global_transform.origin,"loadpath")
-	for i in path:
+	var size = path.size()
+	if size == 0:
+		BHOP_FUTURE.load_state(BHOP_CURRENT.get_state())
+		Q[path].state = BHOP_FUTURE.get_state()
+		return t
+	if size == 1:
+		BHOP_FUTURE.load_state(BHOP_CURRENT.get_state())
 		for ____j in range(cfg['multistep']):
-			t = BHOP_FUTURE.step(i)
+			t = BHOP_FUTURE.step(path[0])
 			if t[1]:
+				Q[path].state = BHOP_FUTURE.get_state()
 				return t
-		trails(BHOP_FUTURE.global_transform.origin,"loadpath")
+		
+		Q[path].state = BHOP_FUTURE.get_state()
+		return t
+	
+	var loadpath = path.slice(0,path.size()-2)
+	var newaction = path[-1]
+#	print([path,loadpath,newaction])
+	BHOP_FUTURE.load_state(Q[loadpath].state)
+	for ____j in range(cfg['multistep']):
+		t = BHOP_FUTURE.step(newaction)
+		if t[1]:
+			Q[path].state = BHOP_FUTURE.get_state()
+			return t
 
+	Q[path].state = BHOP_FUTURE.get_state()
 	return t
+#
+#	BHOP_FUTURE.load_state(BHOP_CURRENT.get_state())
+#
+#
+#
+#	trailsreset(BHOP_FUTURE.global_transform.origin,"loadpath")
+#	for i in path:
+#		for ____j in range(cfg['multistep']):
+#
+#			t = BHOP_FUTURE.step(i)
+#			if t[1]:
+#				return t
+#		trails(BHOP_FUTURE.global_transform.origin,"loadpath")
+#
+#	return t
 
 
 
@@ -141,7 +183,8 @@ func best_action(path):
 onready var trail_dict={
 	"rollout":[BHOP_CURRENT.global_transform.origin,Color(0,1,1)],
 	"loadpath":[BHOP_CURRENT.global_transform.origin,Color(1,1,0)],
-	"current":[BHOP_CURRENT.global_transform.origin,Color(0,1,1)]
+	"current":[BHOP_CURRENT.global_transform.origin,Color(0,1,1)],
+	"navpath":[BHOP_CURRENT.global_transform.origin,Color(1,1,0)]
 }
 func trailsreset(newpos,caller):
 	trail_dict[caller][0]=newpos
@@ -200,9 +243,9 @@ func currentstep(x):
 #		var reward = t[0]
 #		var done=t[1]
 		totalscore += t[0]
-		if (t[1]):
+		if t[1]:
 			break
-		trails(BHOP_CURRENT.global_transform.origin,"current")
+#		trails(BHOP_CURRENT.global_transform.origin,"current")
 	return t[1]
 
 
@@ -211,66 +254,98 @@ func currentstep(x):
 
 var action = 0
 
-func reset_tree():
+func reset_logic():
+	splitcounter = cfg['multistep']
+	navpath_reset()
 	Q = {}
 	new_node([])
 	Q[[]].totalreward =1
 	Q[[]].visits =1
 
-var CAMERAreset = true
-func reset_game():
-	reset_tree()
-	BHOP_CURRENT.reset()
-	CAMERAreset=true
 
+func reset_game():
+	cfg['stepcount'] = 0
+	reset_logic()
+	BHOP_CURRENT.reset()
+	
 	totalscore=0
 	iterate(cfg['iterations_per_step'])
 	
+
+
+
+func navpath_reset():
+	cfg['navpath'] = nav.get_simple_path(cfg['startstate'][0],FP.global_transform.origin)
+	navpath_distances_reset()
+
+func navpath_distances_reset():
+	var sum = 0
+
+#	lastpoint is used to compare the distance between the 'current' node in the loop and the last node
+#	goal point
+	var lastpoint = FP.global_transform.origin
+	var nav_reversed = cfg['navpath']
+	nav_reversed.invert()
+#	clears array and sets the last distance to 0  (distance from the finish to the finish)
+	cfg['navpath_distances_to_end']=[0]
+	for i in range(1,cfg['navpath'].size()):
+		cfg['navpath_distances_to_end'].push_back( cfg['navpath_distances_to_end'][i-1] + (nav_reversed[i-1]-nav_reversed[i]).length() )
 	
+	cfg['navpath_distances_to_end'].invert()
 	
+
+func shownav():
+	if BHOP_CURRENT.nav_index < cfg['navpath'].size():
+		nav_index_visualiser.global_transform.origin = cfg['navpath'][BHOP_CURRENT.nav_index]
+	else:
+		nav_index_visualiser.global_transform.origin = FP.global_transform.origin
+	trailsreset(cfg['navpath'][0],"navpath")
+	for i in cfg['navpath']:
+		trails(i,"navpath")
+	
+
 var highscore = -99999999
 var totalscore = 0
 var iterations = 0
 var deaths = 0
-var steps = 0
+
 
 var splitcounter = cfg['multistep']
 func new_move_split():
 	splitcounter -=1
 	if splitcounter==0:
-		splitcounter=cfg['multistep']
 		return true
 	return false
 
 func _ready():
+#	cfg['spawnpos'] = get_node("/root/Main/BHOP_CURRENT").global_transform.origin
+#	cfg['BHOP_lastdistance']=cfg['BHOP_startdistance']
 	randomize()
 	reset_game()
 
 func _physics_process(_delta):
+	shownav()
 #	trailsreset(BHOP_FUTURE.global_transform.origin,"current")
+
 	iterate(ceil(cfg['iterations_per_step']/cfg['multistep']))
 	if new_move_split():
-		if CAMERAreset:
-			CAMERAreset=false
+
 			
 		BHOP_VISIBLE.load_state(BHOP_CURRENT.get_state())
 		action = best_action([])
-		var done = currentstep(action)
-	#	if it died, reset tree otherwise just shift
-		if !done:
-			shift_tree(action)
-		else:
-			if totalscore>highscore:
-				highscore = totalscore
-				print("High score: ",highscore)
-			deaths+=1
-			reset_game()
+#		var done = currentstep(action)
+		BHOP_CURRENT.load_state(Q[[action]].state)
+		
+		shift_tree(action)
+			
+		splitcounter=cfg['multistep']
+
 	
-	steps+=1
+	cfg['stepcount']+=1
 	if BHOP_VISIBLE.step(action)[1]:
 		BHOP_VISIBLE.load_state(BHOP_CURRENT.get_state())
-#		CAMERA.reset()
-		steps=0
+		CAMERA.reset()
+#	Lines3D.DrawLine(BHOP_VISIBLE.global_transform.origin - Vector3(0,2.5,0),FP.global_transform.origin ,Color(0,1,1),0)
 		
 
 	
