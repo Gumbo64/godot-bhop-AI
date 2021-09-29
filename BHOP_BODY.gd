@@ -218,9 +218,7 @@ func distance_reward():
 #func looking_reward():
 #	var sight_score = 0
 #
-var actionrecord = [0,0]
-func printactionrecord():
-	print(actionrecord)
+
 func step(action):
 	rewardtrackers['stepcount']+=1
 	var s_observation_
