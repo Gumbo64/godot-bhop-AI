@@ -475,7 +475,7 @@ material/0 = null
 shape = SubResource( 17 )
 
 [node name="plat6" type="Spatial" parent="."]
-transform = Transform( 2, 0, 0, 0, 1, 0, 0, 0, 2, -1.59363, 3.65505, 149.696 )
+transform = Transform( 2, 0, 0, 0, 1, 0, 0, 0, 2, -1.59363, 3.65505, 159.284 )
 script = ExtResource( 1 )
 map_file = "E:/Users/Rory/Downloads/fps-godot/maps/bhop.map"
 inverse_scale_factor = 16.0

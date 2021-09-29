@@ -4,15 +4,16 @@ importer="texture"
 type="StreamTexture"
 path.s3tc="res://.import/bullethole.png-e8c69c580972b308bfd3d0d98ba14f92.s3tc.stex"
 path.etc2="res://.import/bullethole.png-e8c69c580972b308bfd3d0d98ba14f92.etc2.stex"
+path.etc="res://.import/bullethole.png-e8c69c580972b308bfd3d0d98ba14f92.etc.stex"
 metadata={
-"imported_formats": [ "s3tc", "etc2" ],
+"imported_formats": [ "s3tc", "etc2", "etc" ],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://textures/bullethole.png"
-dest_files=[ "res://.import/bullethole.png-e8c69c580972b308bfd3d0d98ba14f92.s3tc.stex", "res://.import/bullethole.png-e8c69c580972b308bfd3d0d98ba14f92.etc2.stex" ]
+dest_files=[ "res://.import/bullethole.png-e8c69c580972b308bfd3d0d98ba14f92.s3tc.stex", "res://.import/bullethole.png-e8c69c580972b308bfd3d0d98ba14f92.etc2.stex", "res://.import/bullethole.png-e8c69c580972b308bfd3d0d98ba14f92.etc.stex" ]
 
 [params]
 
