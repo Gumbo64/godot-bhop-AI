@@ -4,7 +4,7 @@
 
 extends Camera
 
-export var lerp_speed = 3.0
+export var lerp_speed = 5.0
 export var target_path = "/root/Main/BHOP_VISIBLE"
 #export (Vector3) var offset = Vector3.ZERO
 export (Vector3) var offset = Vector3(0,10,10)

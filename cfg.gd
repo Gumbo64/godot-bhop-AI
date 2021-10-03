@@ -5,11 +5,11 @@ var n_actions=2
 
 var C_exploration= 2
 var iterations_per_step=30
-var multistep=4
+var multistep=6
 var rollout_timeout=4
 
 
-var max_depth = 25
+var max_depth = 99999
 #in steps
 var timeouts = false
 var max_game_length=2000
