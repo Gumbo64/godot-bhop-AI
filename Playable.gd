@@ -68,7 +68,7 @@ func _ready():
 	spawnpos = global_transform.origin
 #	spawnpos = get_node("/root/Main/BHOP_CURRENT").spawnpos
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	raycast.add_exception(get_node("/root/Main/Player"))
+	raycast.add_exception(get_node("/root/Main/playable"))
 	reset()
 	
 onready var head = $Head

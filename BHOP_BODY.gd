@@ -224,6 +224,7 @@ func distance_reward():
 		reward = 1-pow(navpath_distance_to_end()/(cfg['navpath_distances_to_end'][0]+10),0.4)
 		if(global_transform.origin-cfg['navpath'][nav_index]).length() <=cfg['nav_index_min_range'] and global_transform.origin.y > cfg['navpath'][nav_index].y :
 			nav_index += 1
+			reward += 10
 	
 #	var vert_reward = 0
 	
@@ -243,14 +244,17 @@ func step(action):
 	var s_observation_
 	var finish_reward=0
 	var s_done=false
+	var f_done=false
 	var s_info
 	
 	wishJump = true
 	var difference = global_transform.origin - FP.global_transform.origin
 	var distance = difference.length()
 	if distance < cfg['stop_movement_distance'] and global_transform.origin.y >= FP.global_transform.origin.y and nav_index >= cfg['navpath'].size():
+		f_done = true
 		wishJump=false
 		finish_reward += 100
+		
 	
 	
 #	actionrecord[action]+=1
@@ -288,7 +292,7 @@ func step(action):
 		
 	else:
 		pass
-		finish_reward -= 0.1 * get_slide_count()
+#		finish_reward -= 0.3 * get_slide_count()
 #		for i in range(get_slide_count()):
 #			finish_reward -= 0.1
 #			if (get_slide_collision(i).collider.name.left(6) == "Finish"  ):
@@ -342,7 +346,7 @@ func step(action):
 #		return [-300,true]
 		
 
-	return [finish_reward + distance_reward(), s_done]
+	return [finish_reward + distance_reward(), s_done,f_done]
 	
 	
 

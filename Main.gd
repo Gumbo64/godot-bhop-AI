@@ -1,7 +1,7 @@
 extends Spatial
 
 
-onready var CAMERA = get_node("/root/Main/Noclip/Camera")
+onready var CAMERA = get_node("/root/Main/follow/Camera")
 onready var BHOP_CURRENT = get_node("/root/Main/BHOP_CURRENT")
 onready var BHOP_FUTURE = get_node("/root/Main/BHOP_FUTURE")
 onready var BHOP_VISIBLE = get_node("/root/Main/BHOP_VISIBLE")
@@ -66,13 +66,13 @@ func rollout(path):
 func traverse():
 	var path = []
 #		will reach a node that hasn't been rollouted yet / has no visits / not created yet (those all mean the same thing btw)
-	while Q[path].visits != 0 and !Q[path].terminal:
+	while Q[path].visits != 0 and !Q[path].terminal and path.size()<cfg['max_depth']:
 		var i = best_uct_action(path)
 #		var i = rand_action(path)
 		path.push_back(i)
 
 #	Q[path].set_children()
-
+#	print(path.size())
 	return path
 
 func backpropagate(reward,path):
@@ -255,6 +255,7 @@ func currentstep(x):
 var action = 0
 
 func reset_logic():
+	at_destination=false
 	splitcounter = cfg['multistep']
 	navpath_reset()
 	Q = {}
@@ -323,28 +324,32 @@ func _ready():
 	randomize()
 	reset_game()
 
+var at_destination = false
 func _physics_process(_delta):
 	shownav()
 #	trailsreset(BHOP_FUTURE.global_transform.origin,"current")
-
-	iterate(ceil(cfg['iterations_per_step']/cfg['multistep']))
-	if new_move_split():
-
+	if not at_destination:
+		iterate(ceil(cfg['iterations_per_step']/cfg['multistep']))
+		if new_move_split():
 			
-		BHOP_VISIBLE.load_state(BHOP_CURRENT.get_state())
-		action = best_action([])
-#		var done = currentstep(action)
-		BHOP_CURRENT.load_state(Q[[action]].state)
-		
-		shift_tree(action)
+			BHOP_VISIBLE.load_state(BHOP_CURRENT.get_state())
+			action = best_action([])
+	#		var done = currentstep(action)
+			BHOP_CURRENT.load_state(Q[[action]].state)
 			
-		splitcounter=cfg['multistep']
+			shift_tree(action)
+				
+			splitcounter=cfg['multistep']
 
 	
-	cfg['stepcount']+=1
-	if BHOP_VISIBLE.step(action)[1]:
-		BHOP_VISIBLE.load_state(BHOP_CURRENT.get_state())
-		CAMERA.reset()
+		cfg['stepcount']+=1
+		if BHOP_VISIBLE.step(action)[2]:
+			at_destination=true
+			BHOP_VISIBLE.load_state(BHOP_CURRENT.get_state())
+#			CAMERA.reset()
+
+		
+		
 #	Lines3D.DrawLine(BHOP_VISIBLE.global_transform.origin - Vector3(0,2.5,0),FP.global_transform.origin ,Color(0,1,1),0)
 		
 

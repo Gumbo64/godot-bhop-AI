@@ -4,10 +4,12 @@ extends Node
 var n_actions=2
 
 var C_exploration= 2
-var iterations_per_step=20
-var multistep=10
-var rollout_timeout=6
+var iterations_per_step=30
+var multistep=4
+var rollout_timeout=4
 
+
+var max_depth = 25
 #in steps
 var timeouts = false
 var max_game_length=2000
