@@ -224,7 +224,7 @@ func distance_reward():
 		reward = 1-pow(navpath_distance_to_end()/(cfg['navpath_distances_to_end'][0]+10),0.4)
 		if(global_transform.origin-cfg['navpath'][nav_index]).length() <=cfg['nav_index_min_range'] and global_transform.origin.y > cfg['navpath'][nav_index].y :
 			nav_index += 1
-			reward += 10
+			reward += 2
 	
 #	var vert_reward = 0
 	
@@ -244,16 +244,15 @@ func step(action):
 	var s_observation_
 	var finish_reward=0
 	var s_done=false
-	var f_done=false
 	var s_info
 	
 	wishJump = true
 	var difference = global_transform.origin - FP.global_transform.origin
 	var distance = difference.length()
 	if distance < cfg['stop_movement_distance'] and global_transform.origin.y >= FP.global_transform.origin.y and nav_index >= cfg['navpath'].size():
-		f_done = true
+		s_done = true
 		wishJump=false
-		finish_reward += 100
+		finish_reward += 10000
 		
 	
 	
@@ -285,13 +284,14 @@ func step(action):
 	global_transform.origin += playerVelocity * deltat
 	move_and_slide_with_snap(Vector3.ZERO,snap,Vector3.UP)
 	
-	if(global_transform.origin[1]<0):
-#		finish_reward += -30
-#		s_done = true
-		return [-300, true]
-		
-	else:
-		pass
+	finish_reward -= 0.2 * get_slide_count()
+#	if(global_transform.origin[1]<0):
+##		finish_reward += -30
+##		s_done = true
+#		return [-300, true]
+#
+#	else:
+#		pass
 #		finish_reward -= 0.3 * get_slide_count()
 #		for i in range(get_slide_count()):
 #			finish_reward -= 0.1
@@ -322,7 +322,7 @@ func step(action):
 		
 #		this is the MAX angle to surf on
 		var FLOOR_ANGLE_TOLERANCE = 60
-		if (rad2deg(acos(collision.normal.dot(Vector3.UP))) <= FLOOR_ANGLE_TOLERANCE):
+		if (rad2deg(acos(collision.normal.dot(Vector3.UP))) <= FLOOR_ANGLE_TOLERANCE or cfg['bouncy_mode']):
 			var reflect = collision.remainder.bounce(collision.normal)
 			playerVelocity = playerVelocity.bounce(collision.normal)
 			move_and_slide_with_snap(reflect,snap,Vector3.UP)
@@ -346,7 +346,7 @@ func step(action):
 #		return [-300,true]
 		
 
-	return [finish_reward + distance_reward(), s_done,f_done]
+	return [finish_reward + distance_reward(), s_done]
 	
 	
 
@@ -384,7 +384,12 @@ func load_state(s):
 	playerVelocity = s[2]
 	nav_index = s[3]
 	#this move_and_slide_with_snap stops the bot from thinking it's grounded on the first frame if it isn't
-	move_and_slide(Vector3.ZERO)
+	var snap
+	if(is_on_floor()):
+		snap = -get_floor_normal()
+	else:
+		snap = Vector3.DOWN
+	move_and_slide_with_snap(Vector3.ZERO,snap)
 	return 
 
 ##******************************************************************************************************\
@@ -566,8 +571,8 @@ func GroundMove(deltat):
 	if(wishJump):
 		playerVelocity.y =  jumpSpeed
 	# only apply if it would make you go faster because going slower up a ramp is lame
-	if ((playerVelocity+ get_floor_normal()*Vector3(1,0,1) * jumpSpeed).length() > playerVelocity.length() ):
-		playerVelocity += get_floor_normal()*Vector3(1,0,1) * jumpSpeed
+#	if ((playerVelocity+ get_floor_normal()*Vector3(1,0,1) * jumpSpeed).length() > playerVelocity.length() ):
+#		playerVelocity += get_floor_normal()*Vector3(1,0,1) * jumpSpeed
 #		playerVelocity += get_floor_normal()*Vector3(1,0,1) * jumpSpeed
 #		wishJump = false
 	

@@ -4,9 +4,9 @@ extends Node
 var n_actions=2
 
 var C_exploration= 2
-var iterations_per_step=30
+var iterations_per_step=50
 var multistep=6
-var rollout_timeout=4
+var rollout_timeout=6
 
 
 var max_depth = 99999
@@ -37,6 +37,8 @@ var nav_index_min_range = 10
 
 
 var camera_selected = "follow"
+
+var bouncy_mode = false
 
 
 #}

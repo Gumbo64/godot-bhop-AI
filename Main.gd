@@ -343,7 +343,7 @@ func _physics_process(_delta):
 
 	
 		cfg['stepcount']+=1
-		if BHOP_VISIBLE.step(action)[2]:
+		if BHOP_VISIBLE.step(action)[1]:
 			at_destination=true
 			BHOP_VISIBLE.load_state(BHOP_CURRENT.get_state())
 #			CAMERA.reset()
