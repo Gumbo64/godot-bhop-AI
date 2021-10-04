@@ -1,3 +1,5 @@
+# [Youtube Video](https://www.youtube.com/watch?v=x8CDa-khAYY)
+
 # What is it
 This is a path-finding AI that takes advantage of [bunnyhopping](https://youtu.be/LxirBXof-3s), a movement technique in Counter Strike and other such games. To move optimally, a bot also has to factor in acceleration, variable turning radius and speed gains/losses from slopes and walls. This unique scenario means that conventional path-finding approaches can only be used as a general guide but won't help it with fine control.
 
